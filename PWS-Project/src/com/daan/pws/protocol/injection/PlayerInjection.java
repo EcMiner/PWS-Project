@@ -16,15 +16,16 @@ import net.minecraft.util.io.netty.channel.ChannelDuplexHandler;
 import net.minecraft.util.io.netty.channel.ChannelHandlerContext;
 import net.minecraft.util.io.netty.channel.ChannelPromise;
 
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import com.daan.pws.Main;
 import com.daan.pws.protocol.PacketEvent;
+import com.daan.pws.protocol.PacketManager;
 import com.daan.pws.protocol.PacketReceiveEvent;
 import com.daan.pws.protocol.PacketSendEvent;
-import com.daan.pws.protocol.PacketType;
 
 public class PlayerInjection {
 
@@ -36,6 +37,7 @@ public class PlayerInjection {
 	private Map<String, Channel> channels = new HashMap<String, Channel>();
 	private List<Channel> injectedChannels = new ArrayList<Channel>();
 
+	@SuppressWarnings("deprecation")
 	public PlayerInjection(Main plugin) {
 		this.plugin = plugin;
 
@@ -55,6 +57,9 @@ public class PlayerInjection {
 			e.printStackTrace();
 		}
 
+		for (Player o : Bukkit.getOnlinePlayers()) {
+			injectPlayer(o);
+		}
 	}
 
 	public final void injectPlayer(final Player p) {
@@ -62,32 +67,41 @@ public class PlayerInjection {
 			EntityPlayer nmsPlayer = ((CraftPlayer) p).getHandle();
 			Channel channel = (Channel) this.mChannel.get(nmsPlayer.playerConnection.networkManager);
 			this.channels.put(p.getUniqueId().toString(), channel);
+			this.injectedChannels.add(channel);
 
 			channel.pipeline().addBefore("packet_handler", "MCProtocol", new ChannelDuplexHandler() {
 
 				@Override
 				public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-					if (msg instanceof Packet) {
-						PacketSendEvent event = new PacketSendEvent((Packet) msg);
-						plugin.getServer().getPluginManager().callEvent(event);
-						if (event.isCancelled()) {
-							return;
+					try {
+						if (msg instanceof Packet) {
+							PacketSendEvent event = new PacketSendEvent((Packet) msg);
+							plugin.getServer().getPluginManager().callEvent(event);
+							if (event.isCancelled()) {
+								return;
+							}
 						}
+					} catch (Exception e) {
+						System.out.println("An error occured while reading the outgoing packets!\n" + e.getMessage());
 					}
 					super.write(ctx, msg, promise);
 				}
 
 				@Override
 				public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-					if (msg instanceof Packet) {
-						PacketReceiveEvent event = new PacketReceiveEvent((Packet) msg);
-						plugin.getServer().getPluginManager().callEvent(event);
+					try {
+						if (msg instanceof Packet) {
+							PacketReceiveEvent event = new PacketReceiveEvent((Packet) msg);
+							plugin.getServer().getPluginManager().callEvent(event);
 
-						PacketEvent evt = new PacketEvent((Packet) msg, PacketType.getTypeFromPacketClass(msg.getClass()));
-						plugin.protocol.handlePacket((Packet) msg, evt);
-						if (evt.isCancelled() || event.isCancelled()) {
-							return;
+							PacketEvent evt = new PacketEvent((Packet) msg, PacketManager.getPacketType(((Packet) msg).getClass()));
+							plugin.protocol.handlePacket((Packet) msg, evt);
+							if (evt.isCancelled() || event.isCancelled()) {
+								return;
+							}
 						}
+					} catch (Exception e) {
+						System.out.println("An error occured while reading the incoming packets!\n" + e.getMessage());
 					}
 					super.channelRead(ctx, msg);
 				}
@@ -125,4 +139,13 @@ public class PlayerInjection {
 			e.printStackTrace();
 		}
 	}
+
+	public final void disable() {
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!DISABLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		for (Channel channel : injectedChannels) {
+			channel.pipeline().remove("MCProtocol");
+			channel.pipeline().remove("MCProtocol Ping");
+		}
+	}
+
 }

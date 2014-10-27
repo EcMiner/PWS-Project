@@ -1,37 +1,19 @@
 package com.daan.pws.protocol;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.minecraft.server.v1_7_R4.Packet;
 
 import com.daan.pws.utilities.StringUtil;
 
 public class PacketType {
 
-	private static final Map<Integer, PacketType> fromMcId = new HashMap<Integer, PacketType>();
-	private static final Map<Integer, PacketType> fromSimpleId = new HashMap<Integer, PacketType>();
-	private static final Map<String, PacketType> fromName = new HashMap<String, PacketType>();
-	private static final Map<Class<? extends net.minecraft.server.v1_7_R4.Packet>, PacketType> fromPacketClass = new HashMap<Class<? extends net.minecraft.server.v1_7_R4.Packet>, PacketType>();
-
-	public static PacketType getTypeFromMcId(int mcPacketId) {
-		return fromMcId.get(mcPacketId);
-	}
-
-	public static PacketType getTypeFromSimpleId(int simpleId) {
-		return fromSimpleId.get(simpleId);
-	}
-
-	public static PacketType getTypeFromName(String name) {
-		return fromName.get(name.toLowerCase().replace("_", ""));
-	}
-
-	public static PacketType getTypeFromNmsPacket(Packet packet) {
-		return getTypeFromPacketClass(packet.getClass());
-	}
-
-	public static PacketType getTypeFromPacketClass(Class<?> packetClass) {
-		return fromPacketClass.get(packetClass);
+	public static final void init() {
+		Handshake.Client.getSender();
+		Login.Client.getSender();
+		Login.Server.getSender();
+		Status.Client.getSender();
+		Status.Server.getSender();
+		Play.Client.getSender();
+		Play.Server.getSender();
 	}
 
 	private ProtocolType protocolType;
@@ -58,13 +40,12 @@ public class PacketType {
 		}
 		try {
 			this.packetClass = (Class<? extends Packet>) Class.forName(sb.toString());
+			System.out.println("======>>>" + packetClass.getCanonicalName());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		fromSimpleId.put(simpleId, this);
-		fromName.put(packetName.toLowerCase().replace("_", ""), this);
-		fromPacketClass.put(packetClass, this);
+		PacketManager.addPacketType(this);
 	}
 
 	public ProtocolType getProtocolType() {
@@ -103,13 +84,13 @@ public class PacketType {
 
 	public static enum ProtocolType {
 
-		HANDSHAKE, PLAY, STATUS, LOGIN;
+		HANDSHAKING, PLAY, STATUS, LOGIN;
 
 	}
 
 	public static class Handshake {
 
-		private static final ProtocolType protocol = ProtocolType.HANDSHAKE;
+		private static final ProtocolType protocol = ProtocolType.HANDSHAKING;
 
 		public static class Client {
 

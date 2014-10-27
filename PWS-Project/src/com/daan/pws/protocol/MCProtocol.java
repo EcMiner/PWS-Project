@@ -15,7 +15,7 @@ public class MCProtocol {
 	}
 
 	public final void handlePacket(Packet packet, PacketEvent event) {
-		PacketType type = PacketType.getTypeFromPacketClass(packet.getClass());
+		PacketType type = PacketManager.getPacketType(packet.getClass());
 		if (packetListeners.containsKey(type)) {
 			for (PacketListener listener : packetListeners.get(type)) {
 				listener.onPacketEvent(event);

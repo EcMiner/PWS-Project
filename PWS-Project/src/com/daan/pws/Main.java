@@ -22,23 +22,26 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 
+		PacketType.init();
+
 		registerListeners();
 
 		this.injection = new PlayerInjection(this);
 		this.protocol = new MCProtocol();
 
-		protocol.addPacketListener(PacketType.Play.Server.NAMED_ENTITY_SPAWN, new PacketListener() {
+		/*protocol.addPacketListener(PacketType.Play.Server.NAMED_ENTITY_SPAWN, new PacketListener() {
 
 			@Override
 			public void onPacketEvent(PacketEvent event) {
-				System.out.println(event.getPacket().toString());
+				System.out.println("36:" + event.getPacket().toString());
 			}
 
-		});
+		});*/
 	}
 
 	@Override
 	public void onDisable() {
+		injection.disable();
 	}
 
 	public static Main getInstance() {
