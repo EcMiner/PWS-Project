@@ -6,7 +6,7 @@ import net.minecraft.server.v1_7_R4.Packet;
 
 public class AbstractPacket {
 
-	private Packet nmsPacket;
+	protected Packet nmsPacket;
 
 	public AbstractPacket(Packet nmsPacket) {
 		this.nmsPacket = nmsPacket;
@@ -22,11 +22,12 @@ public class AbstractPacket {
 		}
 	}
 
-	protected final Object getField(String fieldName) {
+	@SuppressWarnings("unchecked")
+	protected final <T> T getField(String fieldName) {
 		try {
 			Field f = nmsPacket.getClass().getDeclaredField(fieldName);
 			f.setAccessible(true);
-			return f.get(nmsPacket);
+			return (T) f.get(nmsPacket);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -43,11 +44,12 @@ public class AbstractPacket {
 		}
 	}
 
-	protected final Object getField(Object targetedClass, String fieldName) {
+	@SuppressWarnings("unchecked")
+	protected final <T> T getField(Object targetedClass, String fieldName) {
 		try {
 			Field f = targetedClass.getClass().getDeclaredField(fieldName);
 			f.setAccessible(true);
-			return f.get(targetedClass);
+			return (T) f.get(targetedClass);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

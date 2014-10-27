@@ -7,8 +7,6 @@ import com.daan.pws.listeners.BlockListener;
 import com.daan.pws.listeners.PlayerListener;
 import com.daan.pws.listeners.WorldListener;
 import com.daan.pws.protocol.MCProtocol;
-import com.daan.pws.protocol.PacketEvent;
-import com.daan.pws.protocol.PacketListener;
 import com.daan.pws.protocol.PacketType;
 import com.daan.pws.protocol.injection.PlayerInjection;
 
@@ -49,9 +47,6 @@ public class Main extends JavaPlugin {
 	}
 
 	private void registerListeners() {
-		/*
-		 * Hier registreren we de listeners, zodat als er een Event gebeurt, die hier gehandeld kunnen worden
-		 */
 		PluginManager pluginManager = getServer().getPluginManager();
 
 		pluginManager.registerEvents(new BlockListener(this), this);
