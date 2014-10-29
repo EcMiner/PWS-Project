@@ -14,7 +14,6 @@ public class PacketManager {
 	}
 
 	public static PacketType getPacketType(Class<? extends Packet> packetClass) {
-		System.out.println(packetClass.getCanonicalName());
 		return packetTypes.get(packetClass.getCanonicalName());
 	}
 

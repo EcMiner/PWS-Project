@@ -77,7 +77,10 @@ public class PlayerInjection {
 						if (msg instanceof Packet) {
 							PacketSendEvent event = new PacketSendEvent((Packet) msg);
 							plugin.getServer().getPluginManager().callEvent(event);
-							if (event.isCancelled()) {
+
+							PacketEvent evt = new PacketEvent((Packet) msg, PacketManager.getPacketType(((Packet) msg).getClass()));
+							plugin.protocol.handlePacket((Packet) msg, evt);
+							if (evt.isCancelled() || event.isCancelled()) {
 								return;
 							}
 						}

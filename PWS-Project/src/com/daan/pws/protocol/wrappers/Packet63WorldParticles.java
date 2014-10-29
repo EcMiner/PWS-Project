@@ -3,11 +3,11 @@ package com.daan.pws.protocol.wrappers;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.server.v1_7_R4.PacketPlayOutWorldParticles;
+import net.minecraft.server.v1_7_R4.Packet;
 
 public class Packet63WorldParticles extends AbstractPacket {
 
-	public Packet63WorldParticles(PacketPlayOutWorldParticles nmsPacket) {
+	public Packet63WorldParticles(Packet nmsPacket) {
 		super(nmsPacket);
 	}
 
@@ -16,62 +16,62 @@ public class Packet63WorldParticles extends AbstractPacket {
 	}
 
 	public void setParticle(Particle particle) {
-		setField("a", particle);
+		setField("a", particle.getName());
 	}
 
-	public int getX() {
+	public float getX() {
 		return getField("b");
 	}
 
-	public void setX(int value) {
+	public void setX(float value) {
 		setField("b", value);
 	}
 
-	public int getY() {
+	public float getY() {
 		return getField("c");
 	}
 
-	public void setY(int value) {
+	public void setY(float value) {
 		setField("c", value);
 	}
 
-	public int getZ() {
+	public float getZ() {
 		return getField("d");
 	}
 
-	public void setZ(int value) {
+	public void setZ(float value) {
 		setField("d", value);
 	}
 
-	public int getOffsetX() {
+	public float getOffsetX() {
 		return getField("e");
 	}
 
-	public void setOffsetX(int value) {
+	public void setOffsetX(float value) {
 		setField("e", value);
 	}
 
-	public int getOffsetY() {
+	public float getOffsetY() {
 		return getField("f");
 	}
 
-	public void setOffsetY(int value) {
+	public void setOffsetY(float value) {
 		setField("f", value);
 	}
 
-	public int getOffsetZ() {
+	public float getOffsetZ() {
 		return getField("g");
 	}
 
-	public void setOffsetZ(int value) {
+	public void setOffsetZ(float value) {
 		setField("g", value);
 	}
 
-	public int getSpeed() {
+	public float getSpeed() {
 		return getField("h");
 	}
 
-	public void setSpeed(int value) {
+	public void setSpeed(float value) {
 		setField("h", value);
 	}
 

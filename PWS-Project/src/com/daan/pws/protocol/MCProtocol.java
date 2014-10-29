@@ -9,25 +9,26 @@ import net.minecraft.server.v1_7_R4.Packet;
 
 public class MCProtocol {
 
-	private static final Map<PacketType, List<PacketListener>> packetListeners = new HashMap<PacketType, List<PacketListener>>();
+	private static final Map<String, List<PacketListener>> packetListeners = new HashMap<String, List<PacketListener>>();
 
 	public MCProtocol() {
 	}
 
 	public final void handlePacket(Packet packet, PacketEvent event) {
 		PacketType type = PacketManager.getPacketType(packet.getClass());
-		if (packetListeners.containsKey(type)) {
-			for (PacketListener listener : packetListeners.get(type)) {
+
+		if (packetListeners.containsKey(type.getPacketName())) {
+			for (PacketListener listener : packetListeners.get(type.getPacketName())) {
 				listener.onPacketEvent(event);
 			}
 		}
 	}
 
 	public final void addPacketListener(PacketType packetType, PacketListener listener) {
-		if (!packetListeners.containsKey(packetType)) {
-			packetListeners.put(packetType, new ArrayList<PacketListener>());
+		if (!packetListeners.containsKey(packetType.getPacketName())) {
+			packetListeners.put(packetType.getPacketName(), new ArrayList<PacketListener>());
 		}
-		packetListeners.get(packetType).add(listener);
+		packetListeners.get(packetType.getPacketName()).add(listener);
 	}
 
 }
