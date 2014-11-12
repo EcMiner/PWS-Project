@@ -6,7 +6,7 @@ import net.minecraft.server.v1_7_R4.Packet;
 
 public class AbstractPacket {
 
-	protected Packet nmsPacket;
+	protected final Packet nmsPacket;
 
 	public AbstractPacket(Packet nmsPacket) {
 		this.nmsPacket = nmsPacket;
@@ -59,5 +59,4 @@ public class AbstractPacket {
 	public Packet getNmsPacket() {
 		return nmsPacket;
 	}
-
 }

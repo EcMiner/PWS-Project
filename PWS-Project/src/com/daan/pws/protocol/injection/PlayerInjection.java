@@ -78,7 +78,7 @@ public class PlayerInjection {
 							PacketSendEvent event = new PacketSendEvent((Packet) msg);
 							plugin.getServer().getPluginManager().callEvent(event);
 
-							PacketEvent evt = new PacketEvent((Packet) msg, PacketManager.getPacketType(((Packet) msg).getClass()));
+							PacketEvent evt = new PacketEvent((Packet) msg, p, PacketManager.getPacketType(((Packet) msg).getClass()));
 							plugin.protocol.handlePacket((Packet) msg, evt);
 							if (evt.isCancelled() || event.isCancelled()) {
 								return;
@@ -97,7 +97,7 @@ public class PlayerInjection {
 							PacketReceiveEvent event = new PacketReceiveEvent((Packet) msg);
 							plugin.getServer().getPluginManager().callEvent(event);
 
-							PacketEvent evt = new PacketEvent((Packet) msg, PacketManager.getPacketType(((Packet) msg).getClass()));
+							PacketEvent evt = new PacketEvent((Packet) msg, p, PacketManager.getPacketType(((Packet) msg).getClass()));
 							plugin.protocol.handlePacket((Packet) msg, evt);
 							if (evt.isCancelled() || event.isCancelled()) {
 								return;
