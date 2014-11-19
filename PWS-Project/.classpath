@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/daan/Downloads/ProtocolLib-3.4.0.jar"/>
+	<classpathentry kind="lib" path="/home/daan/Downloads/craftbukkit-1.6.4-R2.0-2918.jar"/>
+	<classpathentry kind="lib" path="/home/daan/Downloads/spoutcraftplugin-1.6.4-b4.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

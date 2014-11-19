@@ -19,7 +19,6 @@ public class PacketType {
 	private ProtocolType protocolType;
 	private SenderType senderType;
 	private int mcPacketId;
-	private int legacyId;
 	private int simpleId;
 	private String packetName;
 	private Class<? extends net.minecraft.server.v1_7_R4.Packet> packetClass;
@@ -58,10 +57,6 @@ public class PacketType {
 
 	public int getMcPacketId() {
 		return mcPacketId;
-	}
-
-	public int getLegacyId() {
-		return legacyId;
 	}
 
 	public int getSimpleId() {

@@ -3,13 +3,13 @@ package com.daan.pws.entities;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import net.minecraft.server.v1_7_R4.Block;
-import net.minecraft.server.v1_7_R4.Entity;
-import net.minecraft.server.v1_7_R4.EntityHuman;
-import net.minecraft.server.v1_7_R4.EntityZombie;
-import net.minecraft.server.v1_7_R4.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_7_R4.PathfinderGoalSelector;
-import net.minecraft.server.v1_7_R4.World;
+import net.minecraft.server.v1_6_R3.Block;
+import net.minecraft.server.v1_6_R3.Entity;
+import net.minecraft.server.v1_6_R3.EntityHuman;
+import net.minecraft.server.v1_6_R3.EntityZombie;
+import net.minecraft.server.v1_6_R3.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_6_R3.PathfinderGoalSelector;
+import net.minecraft.server.v1_6_R3.World;
 
 public class StatusZombie extends EntityZombie {
 
@@ -39,21 +39,6 @@ public class StatusZombie extends EntityZombie {
 	}
 
 	protected void a(int i, int j, int k, Block block) {
-	}
-
-	@Override
-	protected String t() {
-		return "";
-	}
-
-	@Override
-	protected String aT() {
-		return "";
-	}
-
-	@Override
-	protected String aU() {
-		return "";
 	}
 
 	@Override

@@ -24,8 +24,6 @@ import org.bukkit.entity.Player;
 import com.daan.pws.Main;
 import com.daan.pws.protocol.PacketEvent;
 import com.daan.pws.protocol.PacketManager;
-import com.daan.pws.protocol.PacketReceiveEvent;
-import com.daan.pws.protocol.PacketSendEvent;
 
 public class PlayerInjection {
 
@@ -75,12 +73,10 @@ public class PlayerInjection {
 				public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
 					try {
 						if (msg instanceof Packet) {
-							PacketSendEvent event = new PacketSendEvent((Packet) msg);
-							plugin.getServer().getPluginManager().callEvent(event);
 
 							PacketEvent evt = new PacketEvent((Packet) msg, p, PacketManager.getPacketType(((Packet) msg).getClass()));
 							plugin.protocol.handlePacket((Packet) msg, evt);
-							if (evt.isCancelled() || event.isCancelled()) {
+							if (evt.isCancelled()) {
 								return;
 							}
 						}
@@ -94,12 +90,9 @@ public class PlayerInjection {
 				public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 					try {
 						if (msg instanceof Packet) {
-							PacketReceiveEvent event = new PacketReceiveEvent((Packet) msg);
-							plugin.getServer().getPluginManager().callEvent(event);
-
 							PacketEvent evt = new PacketEvent((Packet) msg, p, PacketManager.getPacketType(((Packet) msg).getClass()));
 							plugin.protocol.handlePacket((Packet) msg, evt);
-							if (evt.isCancelled() || event.isCancelled()) {
+							if (evt.isCancelled()) {
 								return;
 							}
 						}
@@ -144,7 +137,6 @@ public class PlayerInjection {
 	}
 
 	public final void disable() {
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!DISABLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		for (Channel channel : injectedChannels) {
 			channel.pipeline().remove("MCProtocol");
 			channel.pipeline().remove("MCProtocol Ping");

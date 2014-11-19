@@ -2,7 +2,6 @@ package com.daan.pws.protocol.wrappers;
 
 import net.minecraft.server.v1_7_R4.DataWatcher;
 import net.minecraft.server.v1_7_R4.Packet;
-import net.minecraft.server.v1_7_R4.PacketPlayOutSpawnEntityLiving;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,7 +12,6 @@ public class Packet24SpawnEntityLiving extends AbstractPacket {
 
 	public Packet24SpawnEntityLiving(Packet nmsPacket) {
 		super(nmsPacket);
-		PacketPlayOutSpawnEntityLiving ent;
 	}
 
 	public int getEntityId() {

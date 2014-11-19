@@ -1,6 +1,6 @@
 package com.daan.pws.protocol.wrappers;
 
-import net.minecraft.server.v1_7_R4.Packet;
+import net.minecraft.server.v1_6_R3.Packet;
 
 public class Packet16HeldItemSlot extends AbstractPacket {
 

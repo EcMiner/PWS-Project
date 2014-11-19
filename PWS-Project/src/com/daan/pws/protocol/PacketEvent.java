@@ -4,8 +4,21 @@ import net.minecraft.server.v1_7_R4.Packet;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
-public class PacketEvent {
+public class PacketEvent extends Event implements Cancellable {
+
+	private static final HandlerList handlers = new HandlerList();
+
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 
 	private Packet packet;
 	private PacketType packetType;

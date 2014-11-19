@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.daan.pws.Main;
+
 import net.minecraft.server.v1_7_R4.Packet;
 
 public class MCProtocol {
@@ -16,6 +18,8 @@ public class MCProtocol {
 
 	public final void handlePacket(Packet packet, PacketEvent event) {
 		PacketType type = PacketManager.getPacketType(packet.getClass());
+
+		Main.getInstance().getServer().getPluginManager().callEvent(event);
 
 		if (packetListeners.containsKey(type.getPacketName())) {
 			for (PacketListener listener : packetListeners.get(type.getPacketName())) {
