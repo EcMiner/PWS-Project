@@ -1,4 +1,4 @@
-package com.daan.pws.gun;
+package com.daan.pws.weapon;
 
 public abstract class DamagePattern {
 
@@ -6,7 +6,7 @@ public abstract class DamagePattern {
 
 	public static enum PlayerHeight {
 
-		FEET(0f, 0.2f), LOWER_LEGS(0.2f, 0.4f), KNEES(.4f, .45f), UPPER_LEGS(.45f, .65f);
+		FEET(0f, 0f), LOWER_LEGS(0f, 0f), KNEES(0f, 0f), UPPER_LEGS(0f, 0f), CHEST(0f, 0f), STOMACH(0f, 0f), HEAD(0f, 0f), LEG(0f, 0f);
 
 		private float startHeight;
 		private float endHeight;
