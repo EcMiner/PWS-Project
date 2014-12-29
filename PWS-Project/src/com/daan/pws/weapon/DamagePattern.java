@@ -6,7 +6,7 @@ public abstract class DamagePattern {
 
 	public static enum PlayerHeight {
 
-		FEET(0f, 0f), LOWER_LEGS(0f, 0f), KNEES(0f, 0f), UPPER_LEGS(0f, 0f), CHEST(0f, 0f), STOMACH(0f, 0f), HEAD(0f, 0f), LEG(0f, 0f);
+		FEET(1.734375f, 1.90f), LOWER_LEGS(1.503125f, 1.734375f), KNEES(1.3296875f, 1.503125f), UPPER_LEGS(1.15625f, 1.3296875f), STOMACH(.7515625f, 1.040625f), CHEST(.4625f, .7515625f), HEAD(-.1f, .4625f);
 
 		private float startHeight;
 		private float endHeight;
@@ -30,7 +30,7 @@ public abstract class DamagePattern {
 					return h;
 				}
 			}
-			return null;
+			return PlayerHeight.FEET;
 		}
 
 	}

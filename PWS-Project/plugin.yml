@@ -1,3 +1,10 @@
 name: PWS
 main: com.daan.pws.Main
 version: 0.1
+softdepend: [ProtocolLib]
+commands:
+  ak:
+  glock:
+  bomb:
+  p90:
+  rl:
