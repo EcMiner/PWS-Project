@@ -1,6 +1,7 @@
 package com.daan.pws.listeners;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.getspout.spoutapi.SpoutManager;
@@ -29,9 +30,11 @@ public class WeaponDropListener implements BindingExecutionDelegate {
 		if (GunManager.isGun(player.getItemInHand())) {
 			GunHud.removeBulletsOnScreen(player);
 			player.removePotionEffect(PotionEffectType.FAST_DIGGING);
-			player.getWorld().dropItem(player.getEyeLocation(), player.getItemInHand()).setVelocity(player.getEyeLocation().getDirection().multiply(.2));
+			Item item = player.getWorld().dropItem(player.getEyeLocation(), player.getItemInHand());
+			item.setVelocity(player.getEyeLocation().getDirection().multiply(.4));
+			item.setPickupDelay(10);
+			
 			player.setItemInHand(new ItemStack(Material.AIR));
 		}
 	}
-
 }

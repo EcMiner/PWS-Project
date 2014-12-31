@@ -1,10 +1,12 @@
 package com.daan.pws.weapon;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.lang3.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -113,15 +115,15 @@ public class Gun {
 	}
 
 	public void playShootSound(SpoutPlayer player) {
-		SpoutManager.getSoundManager().playCustomMusic(Main.getInstance(), player, shootUrl, false);
+		SpoutManager.getSoundManager().playGlobalCustomMusic(Main.getInstance(), shootUrl, false, player.getEyeLocation(), 50);
 	}
 
 	@SuppressWarnings("deprecation")
-	public final void shootBulllet(SpoutPlayer player) {
+	public final void shootBulllet(final SpoutPlayer player) {
 		GunManager.shootBullet(player, this);
 		playShootSound(player);
 
-		Location loc = player.getEyeLocation();
+		final Location loc = player.getEyeLocation();
 		Vector toAdd = player.getEyeLocation().getDirection();
 
 		Vector pVelocity = PlayerUtil.getVelocity(player);
@@ -133,9 +135,12 @@ public class Gun {
 			if (!loc.getBlock().getType().isSolid()) {
 				if (i % 3 == 0) {
 					try {
-						ParticleEffects.CRIT.sendToPlayer(player, loc, 0, 0, 0, 0.0f, 1);
-					} catch (Exception e) {
-						e.printStackTrace();
+						try {
+							ParticleEffects.CRIT.sendToPlayer(player, loc, 0, 0, 0, 0.0f, 1);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} catch (ConcurrentModificationException e) {
 					}
 					for (Entity e : loc.getChunk().getEntities()) {
 						if (e instanceof Player && e != player) {
@@ -160,16 +165,26 @@ public class Gun {
 							}
 						} else if (!(e instanceof Player)) {
 							if (e instanceof LivingEntity) {
-								LivingEntity le = (LivingEntity) e;
+								final LivingEntity le = (LivingEntity) e;
 								if (loc.distanceSquared(e.getLocation()) <= 4 || loc.distanceSquared(le.getEyeLocation()) <= 4) {
-									le.damage(20d, player);
+									Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
+
+										@Override
+										public void run() {
+											le.damage(20d, player);
+										}
+
+									});
 								}
 							}
 						}
 					}
 				}
 			} else {
-				loc.getWorld().playEffect(loc.clone().subtract(toAdd), Effect.STEP_SOUND, loc.getBlock().getTypeId());
+				try {
+					loc.getWorld().playEffect(loc.clone().subtract(toAdd), Effect.STEP_SOUND, loc.getBlock().getTypeId());
+				} catch (ConcurrentModificationException e) {
+				}
 				break;
 			}
 		}

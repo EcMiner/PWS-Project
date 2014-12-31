@@ -3,6 +3,7 @@ package com.daan.pws;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -13,12 +14,14 @@ import org.getspout.spoutapi.inventory.SpoutItemStack;
 import org.getspout.spoutapi.material.item.GenericCustomTool;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
+import com.daan.pws.commands.MapCommand;
 import com.daan.pws.listeners.BlockListener;
 import com.daan.pws.listeners.GunFireListener;
 import com.daan.pws.listeners.PlayerListener;
 import com.daan.pws.listeners.ReloadListener;
 import com.daan.pws.listeners.WeaponDropListener;
 import com.daan.pws.listeners.WorldListener;
+import com.daan.pws.match.map.CompetitiveMapManager;
 import com.daan.pws.utilities.PlayerUtil;
 import com.daan.pws.weapon.Gun;
 import com.daan.pws.weapon.GunManager;
@@ -35,6 +38,9 @@ public class Main extends JavaPlugin {
 		registerListeners();
 
 		this.gunManager = new GunManager();
+		new CompetitiveMapManager();
+
+		loadCommands();
 	}
 
 	@Override
@@ -43,6 +49,16 @@ public class Main extends JavaPlugin {
 
 	public static Main getInstance() {
 		return instance;
+	}
+
+	public static void registerCommands(CommandExecutor exec, String... commands) {
+		for (String command : commands) {
+			instance.getCommand(command).setExecutor(exec);
+		}
+	}
+
+	private void loadCommands() {
+		new MapCommand();
 	}
 
 	private void registerListeners() {

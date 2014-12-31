@@ -15,7 +15,6 @@ public abstract class AutoGunTimer extends ERunnable {
 		this.player = player;
 
 		long delay = Math.round((1000 / (gun.getRoundsPerMinute() / 60)));
-		System.out.println(delay);
 		runTaskTimer(0, delay);
 	}
 
