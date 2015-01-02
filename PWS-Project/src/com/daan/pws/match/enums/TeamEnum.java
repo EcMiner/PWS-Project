@@ -5,16 +5,22 @@ import com.daan.pws.weapon.GunManager;
 
 public enum TeamEnum {
 
-	COUNTER_TERRORISTS("USP-S"), TERRORISTS("Glock-18");
+	COUNTER_TERRORISTS("P2000", "Counter Terrorists"), TERRORISTS("Glock-18", "Terrorists");
 
 	private String defaultGunName;
+	private String name;
 
-	private TeamEnum(String defaultGunName) {
+	private TeamEnum(String defaultGunName, String name) {
 		this.defaultGunName = defaultGunName;
+		this.name = name;
 	}
 
 	public Gun getDefaultGun() {
 		return GunManager.getGun(defaultGunName);
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }

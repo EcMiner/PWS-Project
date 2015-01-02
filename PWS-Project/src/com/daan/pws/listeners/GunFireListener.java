@@ -13,6 +13,7 @@ import org.getspout.spoutapi.keyboard.Keyboard;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.daan.pws.Main;
+import com.daan.pws.match.listeners.BombListener;
 import com.daan.pws.runnables.AutoGunTimer;
 import com.daan.pws.scheduler.ERunnable;
 import com.daan.pws.weapon.Gun;
@@ -73,6 +74,8 @@ public class GunFireListener implements BindingExecutionDelegate, Listener {
 					}
 				}
 			}
+		} else if (p.getItemInHand() != null && p.getItemInHand().hasItemMeta() && p.getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase("Bomb")) {
+			BombListener.instance.onPressLeftClickBomb(p);
 		}
 	}
 
@@ -82,6 +85,9 @@ public class GunFireListener implements BindingExecutionDelegate, Listener {
 		if (fireTasks.containsKey(p.getName())) {
 			fireTasks.get(p.getName()).cancel();
 			fireTasks.remove(p.getName());
+		}
+		if (p.getItemInHand() != null && p.getItemInHand().hasItemMeta() && p.getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase("Bomb")) {
+			BombListener.instance.onReleaseLeftClickBomb(p);
 		}
 	}
 

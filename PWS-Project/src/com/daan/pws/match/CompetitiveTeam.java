@@ -13,6 +13,7 @@ public class CompetitiveTeam {
 
 	private final TeamEnum team;
 	private final int maxPlayers;
+	private int wins;
 	private Map<UUID, CompetitivePlayer> players = new HashMap<UUID, CompetitivePlayer>();
 
 	public CompetitiveTeam(TeamEnum team, int maxPlayers) {
@@ -50,6 +51,18 @@ public class CompetitiveTeam {
 
 	public CompetitivePlayer getCompetitivePlayer(SpoutPlayer player) {
 		return players.get(player.getUniqueId());
+	}
+
+	public int getWins() {
+		return wins;
+	}
+
+	public void setWins(int wins) {
+		this.wins = wins;
+	}
+
+	public void addWins(int wins) {
+		this.wins += wins;
 	}
 
 }

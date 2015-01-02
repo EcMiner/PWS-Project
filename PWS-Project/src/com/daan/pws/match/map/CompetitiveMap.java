@@ -1,7 +1,6 @@
 package com.daan.pws.match.map;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -12,7 +11,7 @@ public class CompetitiveMap {
 	private final int id;
 	private boolean inUse = false;
 
-	private CuboidRegion counterTerroristsBuyZone, terroristsBuyZone;
+	private CuboidRegion counterTerroristsBuyZone, terroristsBuyZone, aBombSite, bBombSite;
 	private List<Location> counterTerroristsSpawns = new ArrayList<Location>(), terroristsSpawns = new ArrayList<Location>();
 
 	protected CompetitiveMap(String name, int id) {
@@ -52,6 +51,22 @@ public class CompetitiveMap {
 		return terroristsBuyZone;
 	}
 
+	public CuboidRegion getABombSite() {
+		return aBombSite;
+	}
+
+	public void setABombSite(CuboidRegion aBombSite) {
+		this.aBombSite = aBombSite;
+	}
+
+	public CuboidRegion getBBombSite() {
+		return bBombSite;
+	}
+
+	public void setBBombSite(CuboidRegion bBombSite) {
+		this.bBombSite = bBombSite;
+	}
+
 	public void addCounterTerroristsSpawn(Location loc) {
 		counterTerroristsSpawns.add(loc);
 	}
@@ -60,16 +75,23 @@ public class CompetitiveMap {
 		terroristsSpawns.add(loc);
 	}
 
-	public Collection<Location> getCounterTerroristsSpawns() {
+	public List<Location> getCounterTerroristsSpawns() {
 		return counterTerroristsSpawns;
 	}
 
-	public Collection<Location> getTerroristsSpawns() {
+	public List<Location> getTerroristsSpawns() {
 		return terroristsSpawns;
 	}
 
 	public boolean isValid() {
-		return counterTerroristsSpawns.size() >= 5 && terroristsSpawns.size() >= 5 && terroristsBuyZone != null && counterTerroristsBuyZone != null && !inUse;
+		System.out.println("ctSpawns: " + (counterTerroristsSpawns.size() >= 5));
+		System.out.println("tSpawns: " + (terroristsSpawns.size() >= 5));
+		System.out.println("tBuyZone: " + (terroristsBuyZone != null));
+		System.out.println("ctBuyZone: " + (counterTerroristsBuyZone != null));
+		System.out.println("aBombSite: " + (aBombSite != null));
+		System.out.println("bBombSite: " + (bBombSite != null));
+		System.out.println("inUse: " + (!inUse));
+		return counterTerroristsSpawns.size() >= 5 && terroristsSpawns.size() >= 5 && terroristsBuyZone != null && counterTerroristsBuyZone != null && aBombSite != null && bBombSite != null && !inUse;
 	}
 
 }

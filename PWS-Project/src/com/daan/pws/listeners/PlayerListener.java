@@ -1,5 +1,6 @@
 package com.daan.pws.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +17,7 @@ import com.daan.pws.hud.DeathsHud;
 import com.daan.pws.hud.GunHud;
 import com.daan.pws.hud.HealthHud;
 import com.daan.pws.hud.MoneyHud;
+import com.daan.pws.match.hud.GameHud;
 import com.daan.pws.weapon.Gun;
 import com.daan.pws.weapon.GunManager;
 
@@ -36,6 +38,17 @@ public class PlayerListener implements Listener {
 		if ((player = SpoutManager.getPlayer(e.getPlayer())) != null) {
 			HealthHud.updateHealth(player, 100);
 			MoneyHud.updateMoney(player, 800);
+
+			GameHud.updateGameHud(player, 114, 7, 6, 10);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+				@Override
+				public void run() {
+					GameHud.updateGameHud(player, 1000, 25, 16, 9);
+				}
+				
+			}, 100);
+			
 			final DeathsHud hud = new DeathsHud(player);
 			hud.addDeath(player, player, GunManager.getGun("Glock-18"), true);
 			hud.addDeath(player, player, GunManager.getGun("AK-47"), false);

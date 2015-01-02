@@ -56,5 +56,5 @@ public class CompetitivePlayer {
 	public void setArmour(int armour) {
 		this.armour = armour;
 	}
-	
+
 }

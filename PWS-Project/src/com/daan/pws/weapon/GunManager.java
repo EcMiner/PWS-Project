@@ -10,6 +10,7 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.daan.pws.guns.AK47;
 import com.daan.pws.guns.Glock18;
+import com.daan.pws.guns.P2000;
 import com.daan.pws.guns.P90;
 import com.daan.pws.hud.GunHud;
 
@@ -71,6 +72,7 @@ public class GunManager {
 		_(new AK47());
 		_(new Glock18());
 		_(new P90());
+		_(new P2000());
 	}
 
 	private void _(Gun gun) {

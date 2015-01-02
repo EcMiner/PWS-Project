@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.getspout.spoutapi.gui.Color;
-import org.getspout.spoutapi.gui.GenericGradient;
 import org.getspout.spoutapi.gui.GenericLabel;
 import org.getspout.spoutapi.gui.GenericTexture;
-import org.getspout.spoutapi.gui.RenderPriority;
 import org.getspout.spoutapi.gui.Widget;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.gui.WidgetAnim;
@@ -72,7 +70,6 @@ public class DeathsHud {
 		private GenericLabel died;
 		private GenericTexture weapon;
 		private GenericTexture headshot;
-		private GenericGradient background;
 
 		private int index;
 
@@ -108,19 +105,6 @@ public class DeathsHud {
 			this.killer.setAlign(WidgetAnchor.TOP_RIGHT);
 			this.killer.setX(this.weapon.getX() - 3).shiftYPos(40 + (index * 13));
 			this.killer.setTextColor(new Color(248, 217, 89));
-
-			this.background = new GenericGradient(new Color(0, 0, 0, 70));
-			this.background.setPriority(RenderPriority.High);
-			this.background.setX(this.died.getX() + 1);
-			this.background.shiftYPos((40 + (index * 13)) - 1);
-			this.background.setHeight(11);
-			this.background.setWidth(diff(this.died.getX(), this.killer.getX() + (killer.getName().length() * 6) + 2));
-		}
-
-		private int diff(int i1, int i2) {
-			int max = Math.max(i1, i2);
-			int min = Math.min(i1, i2);
-			return max - min;
 		}
 
 		public int getIndex() {
@@ -142,7 +126,6 @@ public class DeathsHud {
 						killer.setY(killer.getY() + toAddPerTime);
 						died.setY(died.getY() + toAddPerTime);
 						weapon.setY(weapon.getY() + toAddPerTime);
-						background.setY(background.getY() + toAddPerTime);
 						if (headshot != null) {
 							headshot.setY(headshot.getY() + toAddPerTime);
 						}
@@ -159,12 +142,10 @@ public class DeathsHud {
 			this.killer.animate(animation, value, (short) count, (short) ticks, repeat, reset);
 			this.died.animate(animation, value, (short) count, (short) ticks, repeat, reset);
 			this.weapon.animate(animation, value, (short) count, (short) ticks, repeat, reset);
-			this.background.animate(animation, value, (short) count, (short) ticks, repeat, reset);
 
 			this.killer.animateStart();
 			this.died.animateStart();
 			this.weapon.animateStart();
-			this.background.animateStart();
 
 			if (headshot != null) {
 				this.headshot.animate(animation, value, (short) count, (short) ticks, repeat, reset);
@@ -174,7 +155,7 @@ public class DeathsHud {
 
 		public Death display(SpoutPlayer... players) {
 			for (SpoutPlayer player : players) {
-				player.getMainScreen().attachWidgets(Main.getInstance(), killer, died, weapon, background);
+				player.getMainScreen().attachWidgets(Main.getInstance(), killer, died, weapon);
 				if (headshot != null) {
 					player.getMainScreen().attachWidget(Main.getInstance(), headshot);
 				}
@@ -187,7 +168,6 @@ public class DeathsHud {
 				player.getMainScreen().removeWidget(died);
 				player.getMainScreen().removeWidget(killer);
 				player.getMainScreen().removeWidget(weapon);
-				player.getMainScreen().removeWidget(background);
 				if (headshot != null) {
 					player.getMainScreen().removeWidget(headshot);
 				}

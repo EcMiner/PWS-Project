@@ -1,7 +1,5 @@
 package com.daan.pws;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -9,18 +7,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.getspout.spoutapi.inventory.SpoutItemStack;
 import org.getspout.spoutapi.material.item.GenericCustomTool;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
+import com.daan.pws.commands.LobbyCommand;
 import com.daan.pws.commands.MapCommand;
-import com.daan.pws.listeners.BlockListener;
 import com.daan.pws.listeners.GunFireListener;
 import com.daan.pws.listeners.PlayerListener;
 import com.daan.pws.listeners.ReloadListener;
+import com.daan.pws.listeners.SelectionListener;
 import com.daan.pws.listeners.WeaponDropListener;
 import com.daan.pws.listeners.WorldListener;
+import com.daan.pws.match.listeners.BlockListener;
+import com.daan.pws.match.listeners.BombListener;
 import com.daan.pws.match.map.CompetitiveMapManager;
 import com.daan.pws.utilities.PlayerUtil;
 import com.daan.pws.weapon.Gun;
@@ -59,18 +59,21 @@ public class Main extends JavaPlugin {
 
 	private void loadCommands() {
 		new MapCommand();
+		new LobbyCommand();
 	}
 
 	private void registerListeners() {
 		PluginManager pluginManager = getServer().getPluginManager();
 
+		pluginManager.registerEvents(new BombListener(), this);
 		new GunFireListener();
 		new ReloadListener();
 		new WeaponDropListener();
-		pluginManager.registerEvents(new BlockListener(this), this);
 		pluginManager.registerEvents(new PlayerListener(this), this);
 		pluginManager.registerEvents(new WorldListener(this), this);
 		pluginManager.registerEvents(new PlayerUtil(), this);
+		pluginManager.registerEvents(new SelectionListener(), this);
+		pluginManager.registerEvents(new BlockListener(), this);
 	}
 
 	@Override
@@ -102,32 +105,12 @@ public class Main extends JavaPlugin {
 			spec.setItemMeta(im);
 			player.getInventory().addItem(spec);
 		} else if (command.getName().equalsIgnoreCase("bomb")) {
-			final Player player = (Player) sender;
-			player.sendMessage(ChatColor.GREEN + "Test will start in 5 seconds, start moving!");
-			new BukkitRunnable() {
-
-				private Location oldLoc;
-				int i = 0;
-
-				@Override
-				public void run() {
-					if (i == 11) {
-						Location newLoc = player.getLocation();
-						cancel();
-						player.sendMessage(ChatColor.GREEN + "Calculations finished:");
-						double distance = oldLoc.distance(newLoc);
-						float walkSpeed = player.getWalkSpeed();
-						player.sendMessage(ChatColor.GRAY + "Exact distance: " + distance);
-						player.sendMessage(ChatColor.GRAY + "Speed: " + (distance / 10) + " blocks/s");
-						player.sendMessage(ChatColor.GRAY + "Walk speed: " + walkSpeed);
-					} else if (i == 0) {
-						this.oldLoc = player.getLocation();
-						player.sendMessage(ChatColor.GREEN + "Starting calculations!");
-					}
-					i++;
-				}
-
-			}.runTaskTimer(this, 20, 20);
+			Player player = (Player) sender;
+			if (!PlayerUtil.isFrozen(player)) {
+				PlayerUtil.freeze(player);
+			} else {
+				PlayerUtil.unfreeze(player);
+			}
 		}
 		return false;
 	}

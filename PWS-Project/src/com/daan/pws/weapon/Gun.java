@@ -3,12 +3,13 @@ package com.daan.pws.weapon;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -16,16 +17,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.material.block.Slab;
 import org.getspout.spoutapi.material.item.GenericCustomTool;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.daan.pws.Main;
 import com.daan.pws.hud.HealthHud;
 import com.daan.pws.particle.ParticleEffects;
-import com.daan.pws.utilities.PlayerUtil;
 import com.daan.pws.weapon.DamagePattern.PlayerHeight;
 
-public class Gun {
+public class Gun extends Weapon {
 
 	private List<String> reloading = new ArrayList<String>();
 
@@ -33,6 +34,7 @@ public class Gun {
 	private GunItem gunItem;
 	private int totalAmmo, bulletsInRound, roundsPerMinute, price;
 	private DamagePattern damagePattern;
+	private RecoilPattern recoilPattern;
 	private boolean automatic;
 	private WeaponType weaponType;
 	private double reloadTime;
@@ -114,25 +116,38 @@ public class Gun {
 		this.damagePattern = damagePattern;
 	}
 
+	public RecoilPattern getRecoilPattern() {
+		return recoilPattern;
+	}
+
+	public void setRecoilPattern(RecoilPattern recoilPattern) {
+		this.recoilPattern = recoilPattern;
+	}
+
 	public void playShootSound(SpoutPlayer player) {
 		SpoutManager.getSoundManager().playGlobalCustomMusic(Main.getInstance(), shootUrl, false, player.getEyeLocation(), 50);
 	}
 
+	int x = 0;
+
 	@SuppressWarnings("deprecation")
 	public final void shootBulllet(final SpoutPlayer player) {
+		// x++;
 		GunManager.shootBullet(player, this);
 		playShootSound(player);
 
-		final Location loc = player.getEyeLocation();
-		Vector toAdd = player.getEyeLocation().getDirection();
+		final Location loc = player.getEyeLocation().clone();
+		// loc.setYaw(loc.getYaw() + this.getRecoilPattern().onGunShoot(x)[0]);
+		// loc.setPitch(loc.getPitch() - this.getRecoilPattern().onGunShoot(x)[1]);
+		Vector toAdd = loc.getDirection();
 
-		Vector pVelocity = PlayerUtil.getVelocity(player);
-		Vector v = new Vector(-((Math.random()) * (pVelocity.getX())), -(((Math.random() * 2) * pVelocity.getY()) + ((new Random().nextBoolean() ? -1 : 1) * Math.random() / 10)), -((Math.random()) * (pVelocity.getZ())));
-		toAdd.add(v);
+		// Vector pVelocity = PlayerUtil.getVelocity(player);
+		// Vector v = new Vector(-((Math.random()) * (pVelocity.getX())), -(((Math.random() * 2) * pVelocity.getY()) + ((new Random().nextBoolean() ? -1 : 1) * Math.random() / 10)), -((Math.random()) * (pVelocity.getZ())));
+		// toAdd.add(v);
 
 		for (int i = 0; i < 300; i++) {
 			loc.add(toAdd);
-			if (!loc.getBlock().getType().isSolid()) {
+			if (!loc.getBlock().getType().isSolid() || canGoThrough(loc)) {
 				if (i % 3 == 0) {
 					try {
 						try {
@@ -188,6 +203,17 @@ public class Gun {
 				break;
 			}
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private boolean canGoThrough(Location loc) {
+		Block b = loc.getBlock();
+		if (b.getTypeId() == 44 || b.getTypeId() == 126) {
+			if (loc.getY() > b.getY() + .5) {
+				return true;
+			}
+		}
+		return b.getType().isSolid();
 	}
 
 	public final void reload(final SpoutPlayer player) {

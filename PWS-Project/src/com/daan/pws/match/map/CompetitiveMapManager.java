@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -28,6 +29,10 @@ public class CompetitiveMapManager {
 		config = YamlConfiguration.loadConfiguration(file);
 		save();
 		load();
+	}
+
+	public static Set<String> getAllMapNames() {
+		return maps.keySet();
 	}
 
 	public static boolean hasMaps(String mapName) {
@@ -97,6 +102,10 @@ public class CompetitiveMapManager {
 			config.set(string + "ctBuyZone", serializeLocation(map.getCounterTerroristsBuyZone().getMax()) + ";" + serializeLocation(map.getCounterTerroristsBuyZone().getMin()));
 		if (map.getTerroristsBuyZone() != null)
 			config.set(string + "tBuyZone", serializeLocation(map.getTerroristsBuyZone().getMax()) + ";" + serializeLocation(map.getTerroristsBuyZone().getMin()));
+		if (map.getABombSite() != null)
+			config.set(string + "aBombSite", serializeLocation(map.getABombSite().getMax()) + ";" + serializeLocation(map.getABombSite().getMin()));
+		if (map.getBBombSite() != null)
+			config.set(string + "bBombSite", serializeLocation(map.getBBombSite().getMax()) + ";" + serializeLocation(map.getBBombSite().getMin()));
 
 		Function<Location, String> transformFunction = new Function<Location, String>() {
 
@@ -129,6 +138,14 @@ public class CompetitiveMapManager {
 					if (config.isSet("maps." + mapName + "." + mapId + ".tBuyZone")) {
 						String[] a = config.getString("maps." + mapName + "." + mapId + ".tBuyZone").split(";");
 						map.setTerroristsBuyZone(new CuboidRegion(deserializeLocation(a[0]), deserializeLocation(a[1])));
+					}
+					if (config.isSet("maps." + mapName + "." + mapId + ".aBombSite")) {
+						String[] a = config.getString("maps." + mapName + "." + mapId + ".aBombSite").split(";");
+						map.setABombSite(new CuboidRegion(deserializeLocation(a[0]), deserializeLocation(a[1])));
+					}
+					if (config.isSet("maps." + mapName + "." + mapId + ".bBombSite")) {
+						String[] a = config.getString("maps." + mapName + "." + mapId + ".bBombSite").split(";");
+						map.setBBombSite(new CuboidRegion(deserializeLocation(a[0]), deserializeLocation(a[1])));
 					}
 					if (config.isSet("maps." + mapName + "." + mapId + ".ctSpawns")) {
 						for (String sLoc : config.getStringList("maps." + mapName + "." + mapId + ".ctSpawns")) {
