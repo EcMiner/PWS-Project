@@ -11,14 +11,16 @@ import com.daan.pws.match.enums.TeamEnum;
 
 public class CompetitiveTeam {
 
+	private final Competitive match;
 	private final TeamEnum team;
 	private final int maxPlayers;
 	private int wins;
 	private Map<UUID, CompetitivePlayer> players = new HashMap<UUID, CompetitivePlayer>();
 
-	public CompetitiveTeam(TeamEnum team, int maxPlayers) {
+	public CompetitiveTeam(TeamEnum team, int maxPlayers, Competitive match) {
 		this.team = team;
 		this.maxPlayers = maxPlayers;
+		this.match = match;
 	}
 
 	public TeamEnum getTeam() {
@@ -30,7 +32,7 @@ public class CompetitiveTeam {
 	}
 
 	protected void addPlayer(SpoutPlayer player) {
-		players.put(player.getUniqueId(), new CompetitivePlayer(player, team));
+		players.put(player.getUniqueId(), new CompetitivePlayer(player, team, match));
 	}
 
 	protected void removePlayer(SpoutPlayer player) {
@@ -63,6 +65,10 @@ public class CompetitiveTeam {
 
 	public void addWins(int wins) {
 		this.wins += wins;
+	}
+
+	public void addWin() {
+		this.wins += 1;
 	}
 
 }

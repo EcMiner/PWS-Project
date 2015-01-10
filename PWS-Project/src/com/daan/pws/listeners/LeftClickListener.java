@@ -3,8 +3,6 @@ package com.daan.pws.listeners;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.input.KeyBindingEvent;
@@ -17,32 +15,31 @@ import com.daan.pws.match.listeners.BombListener;
 import com.daan.pws.runnables.AutoGunTimer;
 import com.daan.pws.scheduler.ERunnable;
 import com.daan.pws.weapon.Gun;
-import com.daan.pws.weapon.GunManager;
+import com.daan.pws.weapon.WeaponManager;
 
-public class GunFireListener implements BindingExecutionDelegate, Listener {
+public class LeftClickListener implements BindingExecutionDelegate {
 
 	private Map<String, ERunnable> fireTasks = new HashMap<String, ERunnable>();
 	private Map<String, Long> cooldown = new HashMap<String, Long>();
 
-	public GunFireListener() {
+	public LeftClickListener() {
 		SpoutManager.getKeyBindingManager().registerBinding("Gun Fire", Keyboard.MOUSE_LEFT, "This will fire the gun you're holding", this, Main.getInstance());
-		Bukkit.getServer().getPluginManager().registerEvents(this, Main.getInstance());
 	}
 
 	@Override
 	public void keyPressed(KeyBindingEvent evt) {
 		SpoutPlayer p = evt.getPlayer();
 		ItemStack is = p.getItemInHand();
-		if (GunManager.isGun(is)) {
-			Gun gun = GunManager.getGun(is);
+		if (WeaponManager.isGun(is)) {
+			Gun gun = WeaponManager.getGun(is);
 			if (gun.isAutomatic()) {
-				if (GunManager.getMagazine(p, gun) > 0 && !gun.isReloading(p)) {
+				if (WeaponManager.getMagazine(p, gun) > 0 && !gun.isReloading(p)) {
 					fireTasks.put(p.getName(), new AutoGunTimer(p, gun) {
 
 						@Override
 						public void run() {
-							if (GunManager.isGun(player.getItemInHand()) && GunManager.getGun(player.getItemInHand()).getName().equals(gun.getName())) {
-								if (GunManager.getMagazine(player, gun) > 0 && !gun.isReloading(player)) {
+							if (WeaponManager.isGun(player.getItemInHand()) && WeaponManager.getGun(player.getItemInHand()).getName().equals(gun.getName())) {
+								if (WeaponManager.getMagazine(player, gun) > 0 && !gun.isReloading(player)) {
 									this.gun.shootBulllet(player);
 								} else {
 									if (!this.gun.isReloading(player))
@@ -63,10 +60,14 @@ public class GunFireListener implements BindingExecutionDelegate, Listener {
 					}
 				}
 			} else {
+				System.out.println(cooldown.containsKey(p.getName()));
+				System.out.println(cooldown.get(p.getName()));
 				if (!cooldown.containsKey(p.getName()) || System.currentTimeMillis() > cooldown.get(p.getName())) {
-					if (GunManager.getMagazine(p, gun) > 0 && !gun.isReloading(p)) {
+					if (WeaponManager.getMagazine(p, gun) > 0 && !gun.isReloading(p)) {
 						gun.shootBulllet(p);
-						cooldown.put(p.getName(), (long) (System.currentTimeMillis() + (1000 / ((double) (gun.getRoundsPerMinute() / 60)))));
+						System.out.println((double) (Double.valueOf(gun.getRoundsPerMinute() + "") / Double.valueOf(60d)));
+						System.out.println((1000 / ((double) (gun.getRoundsPerMinute() / 60))));
+						cooldown.put(p.getName(), (long) (System.currentTimeMillis() + (1000 / ((double) (Double.valueOf(gun.getRoundsPerMinute() + "") / Double.valueOf(60d))))));
 					} else {
 						if (gun.canReload(p)) {
 							gun.reload(p);

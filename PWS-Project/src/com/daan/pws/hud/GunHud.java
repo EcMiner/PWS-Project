@@ -13,7 +13,7 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.daan.pws.Main;
 import com.daan.pws.weapon.Gun;
-import com.daan.pws.weapon.GunManager;
+import com.daan.pws.weapon.WeaponManager;
 
 public class GunHud {
 
@@ -48,7 +48,7 @@ public class GunHud {
 
 	public GunHud(SpoutPlayer player, Gun gun) {
 		bulletsLabel = new GenericLabel();
-		bulletsLabel.setText(GunManager.getMagazine(player, gun) + " / " + GunManager.getReserve(player, gun));
+		bulletsLabel.setText(WeaponManager.getMagazine(player, gun) + " / " + WeaponManager.getReserve(player, gun));
 		bulletsLabel.setScale(2f);
 		bulletsLabel.setAnchor(WidgetAnchor.BOTTOM_RIGHT);
 		bulletsLabel.shiftXPos(-(bulletsLabel.getWidth() * 2) + 10).shiftYPos(-30);
@@ -61,7 +61,7 @@ public class GunHud {
 	}
 
 	public void updateBullets(SpoutPlayer player, Gun gun) {
-		bulletsLabel.setText(GunManager.getMagazine(player, gun) + " / " + GunManager.getReserve(player, gun));
+		bulletsLabel.setText(WeaponManager.getMagazine(player, gun) + " / " + WeaponManager.getReserve(player, gun));
 	}
 
 	public void remove(SpoutPlayer player) {

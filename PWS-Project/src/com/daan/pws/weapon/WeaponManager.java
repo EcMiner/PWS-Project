@@ -8,13 +8,10 @@ import java.util.Map.Entry;
 import org.bukkit.inventory.ItemStack;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-import com.daan.pws.guns.AK47;
-import com.daan.pws.guns.Glock18;
-import com.daan.pws.guns.P2000;
-import com.daan.pws.guns.P90;
+import com.daan.pws.guns.*;
 import com.daan.pws.hud.GunHud;
 
-public class GunManager {
+public class WeaponManager {
 
 	private static final Map<String, Gun> guns = new HashMap<String, Gun>();
 
@@ -64,7 +61,7 @@ public class GunManager {
 		reserve.get(player.getName()).put(gun, bullets);
 	}
 
-	public GunManager() {
+	public WeaponManager() {
 		loadGuns();
 	}
 
@@ -73,6 +70,8 @@ public class GunManager {
 		_(new Glock18());
 		_(new P90());
 		_(new P2000());
+		_(new AWP());
+		_(new AUG());
 	}
 
 	private void _(Gun gun) {

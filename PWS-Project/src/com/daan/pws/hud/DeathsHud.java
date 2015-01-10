@@ -83,7 +83,7 @@ public class DeathsHud {
 			this.died.shiftYPos(40 + (index * 13)).shiftXPos(-5);
 
 			if (headshot) {
-				this.headshot = new GenericTexture("http://i.imgur.com/hW70xbE.png");
+				this.headshot = new GenericTexture("http://panisme.nl/csgo/icons/headshot.png");
 				this.headshot.setAnchor(WidgetAnchor.TOP_RIGHT);
 				this.headshot.setWidth(13).setHeight(11);
 				this.headshot.shiftYPos((40 + (index * 13)) - 1).shiftXPos(-(13 + (died.getName().length() * 6) + 2));

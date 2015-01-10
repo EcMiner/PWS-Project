@@ -1,12 +1,14 @@
 package com.daan.pws.events;
 
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.daan.pws.match.CompetitivePlayer;
-import com.daan.pws.weapon.Weapon;
+import com.daan.pws.weapon.DamagePattern.PlayerHeight;
+import com.daan.pws.weapon.Gun;
 
-public class PlayerDamageEvent extends Event {
+public class PlayerShotEvent extends Event implements Cancellable {
 
 	public static final HandlerList handlers = new HandlerList();
 
@@ -21,13 +23,16 @@ public class PlayerDamageEvent extends Event {
 	private final CompetitivePlayer shooter;
 	private final CompetitivePlayer damaged;
 	private int damage;
-	private final Weapon weapon;
+	private final Gun gun;
+	private final PlayerHeight height;
+	private boolean cancelled = false;
 
-	public PlayerDamageEvent(CompetitivePlayer shooter, CompetitivePlayer damaged, int damage, Weapon weapon) {
+	public PlayerShotEvent(CompetitivePlayer shooter, CompetitivePlayer damaged, int damage, PlayerHeight height, Gun weapon) {
 		this.shooter = shooter;
 		this.damaged = damaged;
 		this.damage = damage;
-		this.weapon = weapon;
+		this.gun = weapon;
+		this.height = height;
 	}
 
 	public CompetitivePlayer getShooter() {
@@ -38,8 +43,8 @@ public class PlayerDamageEvent extends Event {
 		return damaged;
 	}
 
-	public Weapon getWeapon() {
-		return weapon;
+	public Gun getGun() {
+		return gun;
 	}
 
 	public int getDamage() {
@@ -48,6 +53,20 @@ public class PlayerDamageEvent extends Event {
 
 	public void setDamage(int damage) {
 		this.damage = damage;
+	}
+
+	public PlayerHeight getHeight() {
+		return height;
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	@Override
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 }

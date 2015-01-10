@@ -20,12 +20,40 @@ public class GameHud {
 		if (!gameHuds.containsKey(player.getName())) {
 			new GameHud(player, timeInSeconds, inRound, ctWins, tWins);
 		} else {
-			gameHuds.get(player.getName()).update(player, timeInSeconds, inRound, ctWins, tWins);
+			gameHuds.get(player.getName()).update(timeInSeconds, inRound, ctWins, tWins);
 		}
 	}
 
 	public static void updateTime(SpoutPlayer player, int timeInSeconds) {
-		
+		if (!gameHuds.containsKey(player.getName())) {
+			new GameHud(player, timeInSeconds, 1, 0, 0);
+		} else {
+			gameHuds.get(player.getName()).updateTime(timeInSeconds);
+		}
+	}
+
+	public static void updateRounds(SpoutPlayer player, int rounds) {
+		if (!gameHuds.containsKey(player.getName())) {
+			new GameHud(player, 0, rounds, 0, 0);
+		} else {
+			gameHuds.get(player.getName()).updateRounds(rounds);
+		}
+	}
+
+	public static void updateCtWins(SpoutPlayer player, int ctWins) {
+		if (!gameHuds.containsKey(player.getName())) {
+			new GameHud(player, 0, 1, ctWins, 0);
+		} else {
+			gameHuds.get(player.getName()).updateCtWins(ctWins);
+		}
+	}
+
+	public static void updateTWins(SpoutPlayer player, int tWins) {
+		if (!gameHuds.containsKey(player.getName())) {
+			new GameHud(player, 0, 1, 0, tWins);
+		} else {
+			gameHuds.get(player.getName()).updateTWins(tWins);
+		}
 	}
 
 	private GenericLabel time;
@@ -41,6 +69,7 @@ public class GameHud {
 		time.shiftYPos(2).shiftXPos(12);
 		time.setText(formatTime(timeInSeconds));
 		time.setShadow(false);
+		time.setTextColor(timeInSeconds <= 10 ? new Color(255, 113, 111) : new Color(255, 255, 255));
 
 		rounds = new GenericLabel();
 		rounds.setAnchor(WidgetAnchor.TOP_CENTER);
@@ -77,10 +106,27 @@ public class GameHud {
 		gameHuds.put(player.getName(), this);
 	}
 
-	public void update(SpoutPlayer player, int timeInSeconds, int inRound, int ctWins, int tWins) {
+	public void update(int timeInSeconds, int inRound, int ctWins, int tWins) {
 		time.setText(formatTime(timeInSeconds));
 		rounds.setText("Round " + inRound + "/30");
 		ctLabel.setText("COUNTER-TERRORISTS  " + ctWins);
+		tLabel.setText(tWins + "  TERRORISTS");
+	}
+
+	public void updateTime(int timeInSeconds) {
+		time.setText(formatTime(timeInSeconds));
+		time.setTextColor(timeInSeconds <= 10 ? new Color(255, 113, 111) : new Color(255, 255, 255));
+	}
+
+	public void updateRounds(int inRound) {
+		this.rounds.setText("Round " + inRound + "/30");
+	}
+
+	public void updateCtWins(int ctWins) {
+		ctLabel.setText("COUNTER_TERRORISTS  " + ctWins);
+	}
+
+	public void updateTWins(int tWins) {
 		tLabel.setText(tWins + "  TERRORISTS");
 	}
 

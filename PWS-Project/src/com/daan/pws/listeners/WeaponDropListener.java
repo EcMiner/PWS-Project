@@ -12,7 +12,7 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.daan.pws.Main;
 import com.daan.pws.hud.GunHud;
-import com.daan.pws.weapon.GunManager;
+import com.daan.pws.weapon.WeaponManager;
 
 public class WeaponDropListener implements BindingExecutionDelegate {
 
@@ -27,13 +27,13 @@ public class WeaponDropListener implements BindingExecutionDelegate {
 	@Override
 	public void keyReleased(KeyBindingEvent evt) {
 		SpoutPlayer player = evt.getPlayer();
-		if (GunManager.isGun(player.getItemInHand())) {
+		if (WeaponManager.isGun(player.getItemInHand())) {
 			GunHud.removeBulletsOnScreen(player);
 			player.removePotionEffect(PotionEffectType.FAST_DIGGING);
 			Item item = player.getWorld().dropItem(player.getEyeLocation(), player.getItemInHand());
 			item.setVelocity(player.getEyeLocation().getDirection().multiply(.4));
 			item.setPickupDelay(10);
-			
+
 			player.setItemInHand(new ItemStack(Material.AIR));
 		}
 	}

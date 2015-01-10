@@ -1,7 +1,7 @@
 package com.daan.pws.match.enums;
 
 import com.daan.pws.weapon.Gun;
-import com.daan.pws.weapon.GunManager;
+import com.daan.pws.weapon.WeaponManager;
 
 public enum TeamEnum {
 
@@ -16,7 +16,7 @@ public enum TeamEnum {
 	}
 
 	public Gun getDefaultGun() {
-		return GunManager.getGun(defaultGunName);
+		return WeaponManager.getGun(defaultGunName);
 	}
 
 	public String getName() {

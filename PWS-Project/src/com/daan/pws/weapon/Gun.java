@@ -1,14 +1,17 @@
 package com.daan.pws.weapon;
 
+import java.awt.image.BufferedImage;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -17,33 +20,34 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.getspout.spoutapi.SpoutManager;
-import org.getspout.spoutapi.material.block.Slab;
 import org.getspout.spoutapi.material.item.GenericCustomTool;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.daan.pws.Main;
 import com.daan.pws.hud.HealthHud;
 import com.daan.pws.particle.ParticleEffects;
+import com.daan.pws.scheduler.ERunnable;
 import com.daan.pws.weapon.DamagePattern.PlayerHeight;
 
 public class Gun extends Weapon {
 
 	private List<String> reloading = new ArrayList<String>();
 
-	private String name, URL, shootUrl, iconUrl;
+	private String shootUrl, iconUrl, zoomUrl;
 	private GunItem gunItem;
 	private int totalAmmo, bulletsInRound, roundsPerMinute, price;
 	private DamagePattern damagePattern;
 	private RecoilPattern recoilPattern;
 	private boolean automatic;
 	private WeaponType weaponType;
-	private double reloadTime;
-	private float movementSpeed;
+	private final double reloadTime, armourPenetration;
+	private int iconWidth;
+	private int iconHeight;
 
-	public Gun(String name, String URL, int totalAmmo, int bulletsInRound, int roundsPerMinute, boolean automatic, int price, WeaponType weaponType, double reloadTime, String shootUrl, String iconUrl, float movementSpeed) {
-		this.name = name;
-		this.URL = URL;
+	public Gun(String name, String URL, int totalAmmo, int bulletsInRound, int roundsPerMinute, boolean automatic, int price, WeaponType weaponType, double reloadTime, String shootUrl, String iconUrl, float movementSpeed, double armourPenetration) {
+		super(name, URL, movementSpeed);
 		this.gunItem = new GunItem(name, URL, (int) ((20 * reloadTime)));
+		this.price = price;
 		Validate.isTrue(totalAmmo % bulletsInRound == 0, "The total ammo must be dividable by the bulletsInRound");
 		this.totalAmmo = totalAmmo;
 		this.bulletsInRound = bulletsInRound;
@@ -53,15 +57,31 @@ public class Gun extends Weapon {
 		this.reloadTime = reloadTime;
 		this.shootUrl = shootUrl;
 		this.iconUrl = iconUrl;
-		this.movementSpeed = movementSpeed;
+		this.armourPenetration = armourPenetration;
+
+		new ERunnable() {
+
+			@Override
+			public void run() {
+				try {
+					URL url = new URL(Gun.this.getIconUrl());
+					BufferedImage img = ImageIO.read(url);
+					Gun.this.iconWidth = img.getWidth();
+					Gun.this.iconHeight = img.getHeight();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+		}.runTaskLater(0);
 	}
 
-	public String getName() {
-		return name;
+	public int getIconHeight() {
+		return iconHeight;
 	}
 
-	public String getURL() {
-		return URL;
+	public int getIconWidth() {
+		return iconWidth;
 	}
 
 	public String getIconUrl() {
@@ -104,8 +124,20 @@ public class Gun extends Weapon {
 		return reloadTime;
 	}
 
-	public float getMovementSpeed() {
-		return movementSpeed;
+	public double getArmourPenetration() {
+		return armourPenetration;
+	}
+
+	public String getZoomUrl() {
+		return zoomUrl;
+	}
+
+	public void setZoomUrl(String zoomUrl) {
+		this.zoomUrl = zoomUrl;
+	}
+
+	public boolean isZoomable() {
+		return this.zoomUrl != null;
 	}
 
 	public DamagePattern getDamagePattern() {
@@ -132,14 +164,12 @@ public class Gun extends Weapon {
 
 	@SuppressWarnings("deprecation")
 	public final void shootBulllet(final SpoutPlayer player) {
-		// x++;
-		GunManager.shootBullet(player, this);
+		x++;
+		WeaponManager.shootBullet(player, this);
 		playShootSound(player);
 
-		final Location loc = player.getEyeLocation().clone();
-		// loc.setYaw(loc.getYaw() + this.getRecoilPattern().onGunShoot(x)[0]);
-		// loc.setPitch(loc.getPitch() - this.getRecoilPattern().onGunShoot(x)[1]);
-		Vector toAdd = loc.getDirection();
+		final Location loc = player.getEyeLocation();
+		Vector toAdd = getRecoilPattern() != null ? getRecoilPattern().getBulletDirection(player, x) : loc.getDirection();
 
 		// Vector pVelocity = PlayerUtil.getVelocity(player);
 		// Vector v = new Vector(-((Math.random()) * (pVelocity.getX())), -(((Math.random() * 2) * pVelocity.getY()) + ((new Random().nextBoolean() ? -1 : 1) * Math.random() / 10)), -((Math.random()) * (pVelocity.getZ())));
@@ -217,7 +247,7 @@ public class Gun extends Weapon {
 	}
 
 	public final void reload(final SpoutPlayer player) {
-		if (GunManager.getReserve(player, this) > 0) {
+		if (WeaponManager.getReserve(player, this) > 0) {
 			reloading.add(player.getName());
 			final int reloadTimeInTicks = (int) ((20 * reloadTime));
 			final ItemStack gun = player.getItemInHand();
@@ -234,7 +264,7 @@ public class Gun extends Weapon {
 							setDurability(gun, reloadTimeInTicks - x);
 						} else {
 							setDurability(gun, 0);
-							GunManager.reload(player, Gun.this);
+							WeaponManager.reload(player, Gun.this);
 							this.cancel();
 							reloading.remove(player.getName());
 							return;
@@ -260,7 +290,7 @@ public class Gun extends Weapon {
 	}
 
 	public boolean canReload(SpoutPlayer player) {
-		return !reloading.contains(player.getName()) && GunManager.getMagazine(player, this) != bulletsInRound && GunManager.getReserve(player, this) > 0;
+		return !reloading.contains(player.getName()) && WeaponManager.getMagazine(player, this) != bulletsInRound && WeaponManager.getReserve(player, this) > 0;
 	}
 
 }

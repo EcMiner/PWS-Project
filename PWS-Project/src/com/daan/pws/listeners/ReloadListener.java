@@ -8,7 +8,7 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.daan.pws.Main;
 import com.daan.pws.weapon.Gun;
-import com.daan.pws.weapon.GunManager;
+import com.daan.pws.weapon.WeaponManager;
 
 public class ReloadListener implements BindingExecutionDelegate {
 
@@ -24,7 +24,7 @@ public class ReloadListener implements BindingExecutionDelegate {
 	public void keyReleased(KeyBindingEvent evt) {
 		SpoutPlayer player = evt.getPlayer();
 		Gun gun;
-		if ((gun = GunManager.getGun(player.getItemInHand())) != null) {
+		if ((gun = WeaponManager.getGun(player.getItemInHand())) != null) {
 			if (gun.canReload(player)) {
 				gun.reload(player);
 			}

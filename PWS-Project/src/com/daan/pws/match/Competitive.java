@@ -6,17 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.getspout.spoutapi.player.SpoutPlayer;
+import org.kitteh.tag.TagAPI;
 
 import com.daan.pws.match.enums.TeamEnum;
 import com.daan.pws.match.map.CompetitiveMap;
 
 public class Competitive {
 
-	private static final Map<UUID, Competitive> playersInMatch = new HashMap<UUID, Competitive>();
+	private static final Map<String, Competitive> playersInMatch = new HashMap<String, Competitive>();
 	private static final List<Competitive> matches = new ArrayList<Competitive>();
 	private static final Random random = new Random();
 
@@ -25,30 +25,32 @@ public class Competitive {
 	}
 
 	public static Competitive getMatch(Player player) {
-		return getMatch(player.getUniqueId());
+		return getMatch(player.getName());
 	}
 
-	public static Competitive getMatch(UUID uuid) {
-		return playersInMatch.get(uuid);
+	public static Competitive getMatch(String name) {
+		return playersInMatch.get(name);
 	}
 
-	public static boolean isInMatch(SpoutPlayer player) {
-		return isInMatch(player.getUniqueId());
+	public static boolean isInMatch(Player player) {
+		return isInMatch(player.getName());
 	}
 
-	public static boolean isInMatch(UUID uuid) {
-		return playersInMatch.containsKey(uuid);
+	public static boolean isInMatch(String name) {
+		return playersInMatch.containsKey(name);
 	}
 
 	private final CompetitiveMap map;
+	private final CompetitiveTimer timer;
 	private final CompetitiveTeam counter_terrorists, terrorists;
 	private boolean bombPlanted = false, gameStarted = false;
 
 	public Competitive(CompetitiveMap map) {
 		this.map = map;
 		this.map.setInUse(true);
-		this.counter_terrorists = new CompetitiveTeam(TeamEnum.COUNTER_TERRORISTS, 5);
-		this.terrorists = new CompetitiveTeam(TeamEnum.TERRORISTS, 5);
+		this.timer = new CompetitiveTimer(this);
+		this.counter_terrorists = new CompetitiveTeam(TeamEnum.COUNTER_TERRORISTS, 5, this);
+		this.terrorists = new CompetitiveTeam(TeamEnum.TERRORISTS, 5, this);
 		matches.add(this);
 	}
 
@@ -70,6 +72,12 @@ public class Competitive {
 
 	public TeamEnum addPlayer(SpoutPlayer player) {
 		if (counter_terrorists.canAddPlayer() && terrorists.canAddPlayer()) {
+			if (counter_terrorists.getPlayers().size() == 0 && terrorists.getPlayers().size() == 0) {
+				TeamEnum team = random.nextBoolean() ? TeamEnum.TERRORISTS : TeamEnum.COUNTER_TERRORISTS;
+				addPlayer(player, team);
+				return team;
+			}
+
 			if (counter_terrorists.getPlayers().size() > terrorists.getPlayers().size()) {
 				addPlayer(player, TeamEnum.TERRORISTS);
 				return TeamEnum.TERRORISTS;
@@ -96,8 +104,9 @@ public class Competitive {
 			} else {
 				terrorists.addPlayer(player);
 			}
-			playersInMatch.put(player.getUniqueId(), this);
+			playersInMatch.put(player.getName(), this);
 		}
+		TagAPI.refreshPlayer(player);
 	}
 
 	public void removePlayer(SpoutPlayer player) {
@@ -109,6 +118,7 @@ public class Competitive {
 			}
 			playersInMatch.remove(player.getUniqueId());
 		}
+		TagAPI.refreshPlayer(player);
 	}
 
 	public boolean isPlayerInMatch(SpoutPlayer player) {
@@ -137,7 +147,8 @@ public class Competitive {
 	}
 
 	public void startMatch() {
-		
+		spawnAllPlayers();
+		timer.start();
 	}
 
 	public boolean isGameStarted() {
@@ -176,6 +187,16 @@ public class Competitive {
 			}
 			player.getPlayer().teleport(map.getTerroristsSpawns().get(index));
 			usedIndexes.add(index + "");
+		}
+	}
+
+	public void winRound(TeamEnum team) {
+		if (team != null) {
+			if (team == TeamEnum.COUNTER_TERRORISTS) {
+
+			} else {
+
+			}
 		}
 	}
 

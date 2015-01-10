@@ -2,7 +2,7 @@ package com.daan.pws.weapon;
 
 public abstract class DamagePattern {
 
-	public abstract double onBulletHit(PlayerHeight height);
+	public abstract int onBulletHit(PlayerHeight height);
 
 	public static enum PlayerHeight {
 

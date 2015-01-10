@@ -10,11 +10,13 @@ public class CompetitivePlayer {
 	private TeamEnum team;
 	private final CompetitiveLoadout loadout;
 	private int money = 800, health = 100, armour = 0;
+	private final Competitive match;
 
-	public CompetitivePlayer(SpoutPlayer player, TeamEnum team) {
+	public CompetitivePlayer(SpoutPlayer player, TeamEnum team, Competitive match) {
 		this.player = player;
 		this.team = team;
 		this.loadout = new CompetitiveLoadout(team);
+		this.match = match;
 	}
 
 	public SpoutPlayer getPlayer() {
@@ -55,6 +57,10 @@ public class CompetitivePlayer {
 
 	public void setArmour(int armour) {
 		this.armour = armour;
+	}
+
+	public Competitive getMatch() {
+		return match;
 	}
 
 }

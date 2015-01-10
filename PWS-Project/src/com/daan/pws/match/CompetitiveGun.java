@@ -54,6 +54,14 @@ public class CompetitiveGun {
 		}
 	}
 
+	public Gun getGun() {
+		return gun;
+	}
+
+	public String getGunName() {
+		return gun.getName();
+	}
+
 	public void reload() {
 		int reserve = bulletsReserve;
 		int toReload = gun.getBulletsInRound() - bulletsInMagazine;
