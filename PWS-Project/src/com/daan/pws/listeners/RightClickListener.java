@@ -1,5 +1,8 @@
 package com.daan.pws.listeners;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.inventory.ItemStack;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.input.KeyBindingEvent;
@@ -14,6 +17,8 @@ import com.daan.pws.weapon.WeaponManager;
 
 public class RightClickListener implements BindingExecutionDelegate {
 
+	public static Map<String, Integer> zoomedInTimes = new HashMap<String, Integer>();
+
 	public RightClickListener() {
 		SpoutManager.getKeyBindingManager().registerBinding("Gun Zoom", Keyboard.MOUSE_RIGHT, "This will toggle zoom if the gun you're holding allows that.", this, Main.getInstance());
 	}
@@ -24,11 +29,19 @@ public class RightClickListener implements BindingExecutionDelegate {
 		ItemStack is = player.getItemInHand();
 		if (WeaponManager.isGun(is)) {
 			Gun gun = WeaponManager.getGun(is);
-			if (gun.isZoomable()) {
-				if (!PlayerUtil.isZoomedIn(player))
-					PlayerUtil.zoomIn(player, 8, gun.getZoomUrl());
-				else
-					PlayerUtil.zoomOut(player);
+			if (gun.isZoomable() && !gun.isReloading(player)) {
+				if (!PlayerUtil.isZoomedIn(player)) {
+					PlayerUtil.zoomIn(player, gun.getZoomFactors()[0], gun.getZoomUrl());
+					zoomedInTimes.put(player.getName(), 1);
+				} else {
+					int times = zoomedInTimes.containsKey(player.getName()) ? zoomedInTimes.get(player.getName()) : 1;
+					if (times >= gun.getZoomFactors().length) {
+						PlayerUtil.zoomOut(player);
+					} else {
+						PlayerUtil.zoomIn(player, gun.getZoomFactors()[times]);
+						zoomedInTimes.put(player.getName(), times + 1);
+					}
+				}
 			}
 		}
 	}

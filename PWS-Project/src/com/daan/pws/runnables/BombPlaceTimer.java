@@ -4,38 +4,37 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.scheduler.BukkitRunnable;
-import org.getspout.spoutapi.gui.Color;
-import org.getspout.spoutapi.gui.GenericGradient;
-import org.getspout.spoutapi.gui.WidgetAnchor;
-import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.daan.pws.Main;
+import com.daan.pws.match.CompetitivePlayer;
+import com.daan.pws.match.enums.NotificationPriority;
+import com.daan.pws.match.enums.TeamEnum;
+import com.daan.pws.match.hud.NotificationHud;
+import com.daan.pws.match.items.Bomb;
+import com.daan.pws.utilities.PlayerUtil;
 
 public class BombPlaceTimer extends BukkitRunnable {
 
 	public static Map<String, BombPlaceTimer> map = new HashMap<String, BombPlaceTimer>();
 
-	private SpoutPlayer player;
-	private GenericGradient progressBar;
+	private CompetitivePlayer player;
 	private int x;
 
-	public BombPlaceTimer(SpoutPlayer player) {
+	public BombPlaceTimer(CompetitivePlayer player) {
 		this.player = player;
-		this.progressBar = new GenericGradient(new Color(20, 250, 30));
-		this.progressBar.setAnchor(WidgetAnchor.CENTER_CENTER);
-		this.progressBar.shiftXPos(-48);
-		this.progressBar.setHeight(6).setWidth(0);
-		this.player.getMainScreen().attachWidget(Main.getInstance(), progressBar);
-		map.put(player.getName(), this);
-		runTaskTimer(Main.getInstance(), 0, 5);
+		PlayerUtil.freeze(player.getPlayer());
+		map.put(player.getPlayer().getName(), this);
+		runTaskTimer(Main.getInstance(), 0, 1);
 	}
 
 	public void run() {
-		if (player.getItemInHand() != null && player.getItemInHand().hasItemMeta() && player.getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase("Bomb")) {
-			if (x <= 12) {
-				this.progressBar.setWidth(this.progressBar.getWidth() + 8);
+		if (player.getPlayer().getItemInHand() != null && Bomb.isBomb(player.getPlayer().getItemInHand()) && player.getTeam() == TeamEnum.TERRORISTS && (player.getMatch().getMap().getABombSite().isInRegion(player.getPlayer()) || player.getMatch().getMap().getBBombSite().isInRegion(player.getPlayer()))) {
+			if (x <= 100) {
+				NotificationHud.showProgressBar(player.getPlayer(), "Planting bomb", 2, ((100 - x) / 20) + 1, x, NotificationPriority.HIGHEST);
 			} else {
+				player.getMatch().plantBomb(player);
 				cancel();
+				return;
 			}
 			x++;
 		} else {
@@ -45,8 +44,8 @@ public class BombPlaceTimer extends BukkitRunnable {
 
 	@Override
 	public synchronized void cancel() throws IllegalStateException {
-		map.remove(player.getName());
-		player.getMainScreen().removeWidget(progressBar);
+		map.remove(player.getPlayer().getName());
+		PlayerUtil.unfreeze(player.getPlayer());
 		super.cancel();
 	}
 }

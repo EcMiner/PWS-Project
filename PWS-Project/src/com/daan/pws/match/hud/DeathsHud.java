@@ -1,6 +1,7 @@
-package com.daan.pws.hud;
+package com.daan.pws.match.hud;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.scheduler.BukkitRunnable;
@@ -17,17 +18,25 @@ import com.daan.pws.weapon.Gun;
 
 public class DeathsHud {
 
-	private SpoutPlayer[] players;
+	private List<SpoutPlayer> players = new ArrayList<SpoutPlayer>();
 	private List<Death> deaths = new ArrayList<Death>();
 	private BukkitRunnable runnable;
 
 	public DeathsHud(SpoutPlayer... players) {
-		this.players = players;
+		this.players.addAll(Arrays.asList(players));
 	}
 
-	public void addDeath(SpoutPlayer killer, SpoutPlayer killed, Gun gun, boolean headshot) {
+	public void addReceiever(SpoutPlayer... players) {
+		this.players.addAll(Arrays.asList(players));
+	}
+
+	public void removeReceiver(SpoutPlayer player) {
+		this.players.remove(player);
+	}
+
+	public void addDeath(String killers, String killed, Gun gun, boolean headshot) {
 		int index = deaths.size();
-		deaths.add(new Death(killer, killed, gun, headshot, index).display(players));
+		deaths.add(new Death(killers, killed, gun.getIconUrl(), gun.getIconWidth(), gun.getIconHeight(), headshot, index).display(players));
 		if (deaths.size() == 1) {
 			runnable = new BukkitRunnable() {
 
@@ -73,38 +82,39 @@ public class DeathsHud {
 
 		private int index;
 
-		public Death(SpoutPlayer killer, SpoutPlayer died, Gun gun, boolean headshot, int index) {
+		public Death(String killer, String died, String iconUrl, int iconWidth, int iconHeight, boolean headshot, int index) {
+			System.out.println(iconUrl);
 			this.index = index;
 			this.died = new GenericLabel();
-			this.died.setText(died.getName());
 			this.died.setAnchor(WidgetAnchor.TOP_RIGHT);
 			this.died.setAlign(WidgetAnchor.TOP_RIGHT);
-			this.died.setTextColor(new Color(129, 161, 230));
+			this.died.setTextColor(died.startsWith("{t}") ? new Color(248, 217, 89) : new Color(129, 161, 230));
 			this.died.shiftYPos(40 + (index * 13)).shiftXPos(-5);
+			this.died.setText(died.replace("{t}", ""));
 
 			if (headshot) {
 				this.headshot = new GenericTexture("http://panisme.nl/csgo/icons/headshot.png");
 				this.headshot.setAnchor(WidgetAnchor.TOP_RIGHT);
 				this.headshot.setWidth(13).setHeight(11);
-				this.headshot.shiftYPos((40 + (index * 13)) - 1).shiftXPos(-(13 + (died.getName().length() * 6) + 2));
+				this.headshot.shiftYPos((40 + (index * 13)) - 1).shiftXPos(-(13 + (died.length() * 6) + 2));
 			}
 
-			this.weapon = new GenericTexture(gun.getIconUrl());
+			this.weapon = new GenericTexture(iconUrl);
 			this.weapon.setAnchor(WidgetAnchor.TOP_RIGHT);
-			this.weapon.setWidth(calculateWidth(this.weapon)).setHeight(10);
+			this.weapon.setWidth(calculateWidth(this.weapon, iconWidth)).setHeight(10);
 			this.weapon.shiftYPos((40 + (index * 13)) - 1);
 			if (this.headshot == null) {
-				this.weapon.shiftXPos(-(this.weapon.getWidth() + (died.getName().length() * 6) + 5));
+				this.weapon.shiftXPos(-(this.weapon.getWidth() + (died.length() * 6) + 5));
 			} else {
 				this.weapon.setX(this.headshot.getX() - 3 - this.weapon.getWidth());
 			}
 
 			this.killer = new GenericLabel();
-			this.killer.setText(killer.getName());
 			this.killer.setAnchor(WidgetAnchor.TOP_RIGHT);
 			this.killer.setAlign(WidgetAnchor.TOP_RIGHT);
 			this.killer.setX(this.weapon.getX() - 3).shiftYPos(40 + (index * 13));
-			this.killer.setTextColor(new Color(248, 217, 89));
+			this.killer.setTextColor(killer.startsWith("{t}") ? new Color(248, 217, 89) : new Color(129, 161, 230));
+			this.killer.setText(killer.replace("{t}", ""));
 		}
 
 		public int getIndex() {
@@ -153,7 +163,7 @@ public class DeathsHud {
 			}
 		}
 
-		public Death display(SpoutPlayer... players) {
+		public Death display(List<SpoutPlayer> players) {
 			for (SpoutPlayer player : players) {
 				player.getMainScreen().attachWidgets(Main.getInstance(), killer, died, weapon);
 				if (headshot != null) {
@@ -163,7 +173,7 @@ public class DeathsHud {
 			return this;
 		}
 
-		public Death remove(SpoutPlayer... players) {
+		public Death remove(List<SpoutPlayer> players) {
 			for (SpoutPlayer player : players) {
 				player.getMainScreen().removeWidget(died);
 				player.getMainScreen().removeWidget(killer);
@@ -175,9 +185,9 @@ public class DeathsHud {
 			return this;
 		}
 
-		private int calculateWidth(Widget widget) {
+		private int calculateWidth(Widget widget, int width) {
 			int toDivide = (int) Math.round((double) (widget.getHeight() / 11));
-			return widget.getWidth() / (toDivide / 2);
+			return width / (toDivide * 2);
 		}
 
 	}

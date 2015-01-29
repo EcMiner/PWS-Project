@@ -84,13 +84,6 @@ public class CompetitiveMap {
 	}
 
 	public boolean isValid() {
-		System.out.println("ctSpawns: " + (counterTerroristsSpawns.size() >= 5));
-		System.out.println("tSpawns: " + (terroristsSpawns.size() >= 5));
-		System.out.println("tBuyZone: " + (terroristsBuyZone != null));
-		System.out.println("ctBuyZone: " + (counterTerroristsBuyZone != null));
-		System.out.println("aBombSite: " + (aBombSite != null));
-		System.out.println("bBombSite: " + (bBombSite != null));
-		System.out.println("inUse: " + (!inUse));
 		return counterTerroristsSpawns.size() >= 5 && terroristsSpawns.size() >= 5 && terroristsBuyZone != null && counterTerroristsBuyZone != null && aBombSite != null && bBombSite != null && !inUse;
 	}
 

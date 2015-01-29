@@ -1,4 +1,4 @@
-package com.daan.pws.hud;
+package com.daan.pws.match.hud;
 
 import java.util.HashMap;
 import java.util.Map;

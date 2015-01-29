@@ -198,7 +198,7 @@ public class BuyGUI {
 			this.keyToPress = keyToPress;
 			this.enable = enable;
 
-			this.button = new GenericButton(keyToPress + " " + text.toUpperCase()) {
+			this.button = new GenericButton(keyToPress + " " + text) {
 
 				@Override
 				public void onButtonClick(ButtonClickEvent event) {
@@ -238,11 +238,9 @@ public class BuyGUI {
 		}
 
 		public void update() {
-			System.out.println(enable == null);
 			if (enable != null) {
 				try {
 					boolean enabled = enable.call();
-					System.out.println(enabled);
 					this.button.setEnabled(enabled);
 				} catch (Exception e) {
 					e.printStackTrace();

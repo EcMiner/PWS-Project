@@ -7,8 +7,9 @@ import org.getspout.spoutapi.keyboard.Keyboard;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.daan.pws.Main;
+import com.daan.pws.match.Competitive;
+import com.daan.pws.match.CompetitiveGun;
 import com.daan.pws.weapon.Gun;
-import com.daan.pws.weapon.WeaponManager;
 
 public class ReloadListener implements BindingExecutionDelegate {
 
@@ -23,8 +24,8 @@ public class ReloadListener implements BindingExecutionDelegate {
 	@Override
 	public void keyReleased(KeyBindingEvent evt) {
 		SpoutPlayer player = evt.getPlayer();
-		Gun gun;
-		if ((gun = WeaponManager.getGun(player.getItemInHand())) != null) {
+		if (Competitive.isInMatch(player) && CompetitiveGun.isCompetitiveGun(player.getItemInHand())) {
+			Gun gun = CompetitiveGun.getCompetitiveGun(player.getItemInHand()).getGun();
 			if (gun.canReload(player)) {
 				gun.reload(player);
 			}

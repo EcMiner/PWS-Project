@@ -3,7 +3,6 @@ package com.daan.pws.match;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -15,7 +14,7 @@ public class CompetitiveTeam {
 	private final TeamEnum team;
 	private final int maxPlayers;
 	private int wins;
-	private Map<UUID, CompetitivePlayer> players = new HashMap<UUID, CompetitivePlayer>();
+	private Map<String, CompetitivePlayer> players = new HashMap<String, CompetitivePlayer>();
 
 	public CompetitiveTeam(TeamEnum team, int maxPlayers, Competitive match) {
 		this.team = team;
@@ -30,17 +29,21 @@ public class CompetitiveTeam {
 	public Collection<CompetitivePlayer> getPlayers() {
 		return players.values();
 	}
+	
+	public Collection<String> getPlayerNames() {
+		return players.keySet();
+	}
 
 	protected void addPlayer(SpoutPlayer player) {
-		players.put(player.getUniqueId(), new CompetitivePlayer(player, team, match));
+		players.put(player.getName(), new CompetitivePlayer(player, team, match));
 	}
 
 	protected void removePlayer(SpoutPlayer player) {
-		players.remove(player.getUniqueId());
+		players.remove(player.getName());
 	}
 
 	public boolean hasPlayer(SpoutPlayer player) {
-		return players.containsKey(player.getUniqueId());
+		return players.containsKey(player.getName());
 	}
 
 	public int getMaxPlayers() {
@@ -52,7 +55,7 @@ public class CompetitiveTeam {
 	}
 
 	public CompetitivePlayer getCompetitivePlayer(SpoutPlayer player) {
-		return players.get(player.getUniqueId());
+		return players.get(player.getName());
 	}
 
 	public int getWins() {
@@ -69,6 +72,16 @@ public class CompetitiveTeam {
 
 	public void addWin() {
 		this.wins += 1;
+	}
+
+	public int getPlayersAlive() {
+		int i = players.size();
+		for (CompetitivePlayer player : players.values()) {
+			if (!player.isAlive()) {
+				i--;
+			}
+		}
+		return i;
 	}
 
 }

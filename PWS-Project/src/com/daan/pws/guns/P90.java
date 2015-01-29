@@ -8,7 +8,7 @@ import com.daan.pws.weapon.WeaponType;
 public class P90 extends Gun {
 
 	public P90() {
-		super("P90", "http://panisme.nl/csgo/textures/p90.png", 150, 50, 857, true, 300, WeaponType.SMG, 3.3, "localhost/csgo/weapons/p90/p90-1.wav", "http://panisme.nl/csgo/icons/p90_icon.png", 230, 69d);
+		super("P90", "http://panisme.nl/csgo/textures/p90.png", 150, 50, 857, true, 300, WeaponType.SMG, 3.3, "localhost/csgo/weapons/p90/p90-1.wav", "http://panisme.nl/csgo/icons/p90_icon.png", 230, 69d, 22);
 		setDamagePattern(new DamagePattern() {
 
 			@Override

@@ -39,7 +39,7 @@ public class LobbyCommand implements CommandExecutor, TabCompleter {
 								if (CompetitiveMapManager.hasMaps(mapName)) {
 									CompetitiveMap map = CompetitiveMapManager.getMap(mapName);
 									if (map != null) {
-										Competitive comp = new Competitive(map);
+										Competitive comp = new Competitive(map, player);
 										TeamEnum team = comp.addPlayer(player);
 										player.sendMessage(ChatColor.GREEN + "Successfully created a lobby on the map " + map.getName() + ". You have been put on the " + team.getName() + " side");
 										return true;
@@ -65,7 +65,7 @@ public class LobbyCommand implements CommandExecutor, TabCompleter {
 								String mapName = args[1];
 								if (CompetitiveMapManager.hasMaps(mapName)) {
 									for (Competitive match : Competitive.getAllMatches()) {
-										if (!match.isGameStarted() && match.getMap().getName().equalsIgnoreCase("") && match.canJoin()) {
+										if (!match.isGameStarted() && match.getMap().getName().equalsIgnoreCase(mapName) && match.canJoin()) {
 											TeamEnum team = match.addPlayer(player);
 											player.sendMessage(ChatColor.GREEN + "Successfully joined a game on the map " + match.getMap().getName() + " and you joined the " + team.getName() + " side.");
 											return true;
@@ -90,6 +90,7 @@ public class LobbyCommand implements CommandExecutor, TabCompleter {
 							if (Competitive.isInMatch(player)) {
 								if (!Competitive.getMatch(player).isGameStarted()) {
 									Competitive.getMatch(player).removePlayer(player);
+									return true;
 								} else {
 									player.sendMessage(ChatColor.RED + "Can't leave current lobby because the match has already started.");
 									return false;
@@ -100,6 +101,33 @@ public class LobbyCommand implements CommandExecutor, TabCompleter {
 							}
 						} else {
 							player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " leave");
+							return false;
+						}
+					} else if (args[0].equalsIgnoreCase("start")) {
+						if (args.length == 1) {
+							if (Competitive.isInMatch(player)) {
+								Competitive comp = Competitive.getMatch(player);
+								if (comp.getHost() != null && comp.getHost() == player) {
+									if (!comp.isGameStarted()) {
+										if (comp.getTotalAmountOfPlayers() >= 2) {
+											comp.startMatch();
+											player.sendMessage(ChatColor.GREEN + "Started the match on map " + comp.getMap().getName());
+											return true;
+										} else {
+											player.sendMessage(ChatColor.RED + "Not enough players to start the match!");
+											return false;
+										}
+									} else {
+										player.sendMessage(ChatColor.RED + "The game has already started!");
+										return false;
+									}
+								} else {
+									player.sendMessage(ChatColor.RED + "You are not the host of the lobby");
+									return false;
+								}
+							}
+						} else {
+							player.sendMessage(ChatColor.RED + "Correct usage: /" + label + " start");
 							return false;
 						}
 					} else {
@@ -118,7 +146,7 @@ public class LobbyCommand implements CommandExecutor, TabCompleter {
 		return false;
 	}
 
-	String[] subs = new String[] { "create", "join", "leave" };
+	String[] subs = new String[] { "create", "join", "leave", "start" };
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {

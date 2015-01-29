@@ -30,6 +30,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.daan.pws.Main;
+import com.daan.pws.listeners.RightClickListener;
 
 public class PlayerUtil implements Listener {
 
@@ -87,6 +88,12 @@ public class PlayerUtil implements Listener {
 		return frozen.contains(player.getName());
 	}
 
+	public static void zoomIn(SpoutPlayer player, int zoomfactor) {
+		CraftPlayer cp = (CraftPlayer) player;
+		player.removePotionEffect(PotionEffectType.SLOW);
+		cp.getHandle().addEffect(new MobEffect(2, 1278263, zoomfactor));
+	}
+
 	public static void zoomIn(SpoutPlayer player, int zoomfactor, String zoomUrl) {
 		if (zoomUrl != null) {
 			CraftPlayer cp = (CraftPlayer) player;
@@ -105,6 +112,7 @@ public class PlayerUtil implements Listener {
 			player.getMainScreen().removeWidget(zoomTexture.get(player.getName()));
 			zoomTexture.remove(player.getName());
 		}
+		RightClickListener.zoomedInTimes.remove(player.getName());
 	}
 
 	public static boolean isZoomedIn(SpoutPlayer player) {

@@ -18,18 +18,41 @@ public enum ParticleEffects {
 		this.particleName = particleName;
 	}
 
-	public void sendToPlayer(Player player, Location location, float offsetX, float offsetY, float offsetZ, float speed, int count) throws Exception {
-		Packet63WorldParticles packet = new Packet63WorldParticles();
-		ReflectionUtilities.setValue(packet, "a", particleName);
-		ReflectionUtilities.setValue(packet, "b", (float) location.getX());
-		ReflectionUtilities.setValue(packet, "c", (float) location.getY());
-		ReflectionUtilities.setValue(packet, "d", (float) location.getZ());
-		ReflectionUtilities.setValue(packet, "e", offsetX);
-		ReflectionUtilities.setValue(packet, "f", offsetY);
-		ReflectionUtilities.setValue(packet, "g", offsetZ);
-		ReflectionUtilities.setValue(packet, "h", speed);
-		ReflectionUtilities.setValue(packet, "i", count);
-		((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+	public void sendToPlayer(Player player, Location location, float offsetX, float offsetY, float offsetZ, float speed, int count) {
+		try {
+			Packet63WorldParticles packet = new Packet63WorldParticles();
+			ReflectionUtilities.setValue(packet, "a", particleName);
+			ReflectionUtilities.setValue(packet, "b", (float) location.getX());
+			ReflectionUtilities.setValue(packet, "c", (float) location.getY());
+			ReflectionUtilities.setValue(packet, "d", (float) location.getZ());
+			ReflectionUtilities.setValue(packet, "e", offsetX);
+			ReflectionUtilities.setValue(packet, "f", offsetY);
+			ReflectionUtilities.setValue(packet, "g", offsetZ);
+			ReflectionUtilities.setValue(packet, "h", speed);
+			ReflectionUtilities.setValue(packet, "i", count);
+			((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
+	public void sendToPlayers(Player[] players, Location location, float offsetX, float offsetY, float offsetZ, float speed, int count) {
+		try {
+			Packet63WorldParticles packet = new Packet63WorldParticles();
+			ReflectionUtilities.setValue(packet, "a", particleName);
+			ReflectionUtilities.setValue(packet, "b", (float) location.getX());
+			ReflectionUtilities.setValue(packet, "c", (float) location.getY());
+			ReflectionUtilities.setValue(packet, "d", (float) location.getZ());
+			ReflectionUtilities.setValue(packet, "e", offsetX);
+			ReflectionUtilities.setValue(packet, "f", offsetY);
+			ReflectionUtilities.setValue(packet, "g", offsetZ);
+			ReflectionUtilities.setValue(packet, "h", speed);
+			ReflectionUtilities.setValue(packet, "i", count);
+			for (Player player : players) {
+				((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

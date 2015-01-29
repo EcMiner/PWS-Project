@@ -8,7 +8,7 @@ import com.daan.pws.weapon.WeaponType;
 public class AK47 extends Gun {
 
 	public AK47() {
-		super("AK-47", "http://panisme.nl/csgo/textures/ak47.png", 120, 30, 600, true, 2500, WeaponType.RIFLES, 2.5, "http://localhost/csgo/weapons/ak47/ak47-1.ogg", "http://panisme.nl/csgo/icons/ak47_icon.png", 197, 77.5);
+		super("AK-47", "http://panisme.nl/csgo/textures/ak47.png", 120, 30, 600, true, 2500, WeaponType.RIFLES, 2.5, "http://localhost/csgo/weapons/ak47/ak47-1.ogg", "http://panisme.nl/csgo/icons/ak47_icon.png", 197, 77.5, 18);
 		setDamagePattern(new DamagePattern() {
 
 			@Override

@@ -20,4 +20,12 @@ public enum WeaponType {
 		return reserveSlots;
 	}
 
+	public boolean isPrimary() {
+		return equals(RIFLES) || equals(HEAVY) || equals(SMG);
+	}
+
+	public boolean isSecondary() {
+		return equals(PISTOLS);
+	}
+
 }

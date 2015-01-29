@@ -1,18 +1,30 @@
 package com.daan.pws.match;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.kitteh.tag.TagAPI;
 
+import com.daan.pws.Main;
 import com.daan.pws.match.enums.TeamEnum;
+import com.daan.pws.match.hud.DeathsHud;
+import com.daan.pws.match.hud.GameHud;
+import com.daan.pws.match.hud.HealthHud;
+import com.daan.pws.match.hud.MoneyHud;
 import com.daan.pws.match.map.CompetitiveMap;
+import com.daan.pws.weapon.Gun;
 
 public class Competitive {
 
@@ -43,15 +55,28 @@ public class Competitive {
 	private final CompetitiveMap map;
 	private final CompetitiveTimer timer;
 	private final CompetitiveTeam counter_terrorists, terrorists;
-	private boolean bombPlanted = false, gameStarted = false;
+	private boolean gameStarted = false;
+	private SpoutPlayer host;
+	private int inRound = 1;
+	private final DeathsHud deathsHud;
 
-	public Competitive(CompetitiveMap map) {
+	private Map<String, Location> oldLocs = new HashMap<String, Location>();
+	private List<Item> droppedItems = new ArrayList<Item>();
+	private Block bombBlock;
+
+	public Competitive(CompetitiveMap map, SpoutPlayer host) {
 		this.map = map;
 		this.map.setInUse(true);
 		this.timer = new CompetitiveTimer(this);
 		this.counter_terrorists = new CompetitiveTeam(TeamEnum.COUNTER_TERRORISTS, 5, this);
 		this.terrorists = new CompetitiveTeam(TeamEnum.TERRORISTS, 5, this);
+		this.host = host;
+		this.deathsHud = new DeathsHud();
 		matches.add(this);
+	}
+
+	public SpoutPlayer getHost() {
+		return host;
 	}
 
 	public CompetitiveMap getMap() {
@@ -104,6 +129,7 @@ public class Competitive {
 			} else {
 				terrorists.addPlayer(player);
 			}
+			deathsHud.addReceiever(player);
 			playersInMatch.put(player.getName(), this);
 		}
 		TagAPI.refreshPlayer(player);
@@ -116,9 +142,14 @@ public class Competitive {
 			} else if (terrorists.hasPlayer(player)) {
 				terrorists.removePlayer(player);
 			}
-			playersInMatch.remove(player.getUniqueId());
+			deathsHud.removeReceiver(player);
+			playersInMatch.remove(player.getName());
 		}
 		TagAPI.refreshPlayer(player);
+	}
+
+	public void addDeath(String killers, String killed, Gun gun, boolean headshot) {
+		this.deathsHud.addDeath(killers, killed, gun, headshot);
 	}
 
 	public boolean isPlayerInMatch(SpoutPlayer player) {
@@ -134,19 +165,63 @@ public class Competitive {
 	}
 
 	public boolean isBombPlanted() {
-		return bombPlanted;
-	}
-
-	public void setBombPlanted(boolean bombPlanted) {
-		this.bombPlanted = bombPlanted;
+		return timer.isBombPlanted();
 	}
 
 	public void stopMatch() {
 		this.map.setInUse(false);
 		matches.remove(this);
+		for (CompetitivePlayer player : counter_terrorists.getPlayers()) {
+			if (oldLocs.containsKey(player.getPlayer().getName())) {
+				player.getPlayer().teleport(oldLocs.get(player.getPlayer().getName()));
+				GameHud.removeGameHud(player.getPlayer());
+				HealthHud.removeHealth(player.getPlayer());
+				MoneyHud.removeMoney(player.getPlayer());
+				deathsHud.removeReceiver(player.getPlayer());
+			}
+		}
+		for (CompetitivePlayer player : terrorists.getPlayers()) {
+			if (oldLocs.containsKey(player.getPlayer().getName())) {
+				player.getPlayer().teleport(oldLocs.get(player.getPlayer().getName()));
+				GameHud.removeGameHud(player.getPlayer());
+				HealthHud.removeHealth(player.getPlayer());
+				MoneyHud.removeMoney(player.getPlayer());
+				deathsHud.removeReceiver(player.getPlayer());
+			}
+		}
+		oldLocs.clear();
+		timer.cancel();
 	}
 
 	public void startMatch() {
+		giveRandomBomb();
+		this.gameStarted = true;
+		List<String> terrorists = new ArrayList<String>();
+		List<String> counter_terrorists = new ArrayList<String>();
+		terrorists.addAll(this.terrorists.getPlayerNames());
+		counter_terrorists.addAll(this.counter_terrorists.getPlayerNames());
+		terrorists.addAll(Arrays.asList("Kierano1000", "JackoDEJ", "bball0298", "schmockyyy"));
+		counter_terrorists.addAll(Arrays.asList("thomashomsy", "PheysHunt", "Scude2", "EfficiencyPvP"));
+		for (CompetitivePlayer player : this.counter_terrorists.getPlayers()) {
+			oldLocs.put(player.getPlayer().getName(), player.getPlayer().getLocation());
+			GameHud.updateGameHud(player.getPlayer(), 15, 0, 0, terrorists, counter_terrorists);
+			HealthHud.updateHealth(player.getPlayer(), 100, 0);
+			MoneyHud.updateMoney(player.getPlayer(), 800);
+			player.resetPlayer();
+			GameHud.updateIsPlayAlive(player.getPlayer(), "Kierano1000", false);
+			GameHud.updateIsPlayAlive(player.getPlayer(), "PheysHunt", false);
+			GameHud.updateIsPlayAlive(player.getPlayer(), "EfficiencyPvP", false);
+		}
+		for (CompetitivePlayer player : this.terrorists.getPlayers()) {
+			oldLocs.put(player.getPlayer().getName(), player.getPlayer().getLocation());
+			GameHud.updateGameHud(player.getPlayer(), 15, 0, 0, terrorists, counter_terrorists);
+			MoneyHud.updateMoney(player.getPlayer(), 800);
+			player.resetPlayer();
+			GameHud.updateIsPlayAlive(player.getPlayer(), "Kierano1000", false);
+			GameHud.updateIsPlayAlive(player.getPlayer(), "PheysHunt", false);
+			GameHud.updateIsPlayAlive(player.getPlayer(), "Scude2", false);
+		}
+
 		spawnAllPlayers();
 		timer.start();
 	}
@@ -192,12 +267,114 @@ public class Competitive {
 
 	public void winRound(TeamEnum team) {
 		if (team != null) {
-			if (team == TeamEnum.COUNTER_TERRORISTS) {
-
-			} else {
-
+			if (bombBlock != null) {
+				bombBlock.setType(Material.AIR);
+				bombBlock = null;
 			}
+			if (team == TeamEnum.COUNTER_TERRORISTS) {
+				this.counter_terrorists.addWin();
+				for (CompetitivePlayer player : counter_terrorists.getPlayers()) {
+					player.resetPlayer();
+					GameHud.updateCtWins(player.getPlayer(), this.counter_terrorists.getWins());
+					GameHud.resetAllPlayers(player.getPlayer());
+				}
+				for (CompetitivePlayer player : terrorists.getPlayers()) {
+					player.resetPlayer();
+					GameHud.updateCtWins(player.getPlayer(), this.counter_terrorists.getWins());
+					GameHud.resetAllPlayers(player.getPlayer());
+				}
+			} else {
+				this.terrorists.addWin();
+				for (CompetitivePlayer player : counter_terrorists.getPlayers()) {
+					player.resetPlayer();
+					GameHud.updateTWins(player.getPlayer(), this.terrorists.getWins());
+					GameHud.resetAllPlayers(player.getPlayer());
+				}
+				for (CompetitivePlayer player : terrorists.getPlayers()) {
+					player.resetPlayer();
+					GameHud.updateTWins(player.getPlayer(), this.terrorists.getWins());
+					GameHud.resetAllPlayers(player.getPlayer());
+				}
+			}
+		}
+		inRound++;
+		timer.setPaused(true);
+		timer.updateTimeVisibility(false);
+		timer.updateBombActive(false);
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				timer.reset();
+				destroyItems();
+				giveRandomBomb();
+			}
+
+		}.runTaskLater(Main.getInstance(), 100l);
+	}
+
+	private void giveRandomBomb() {
+		int randomIndex = random.nextInt(terrorists.getPlayers().size());
+		int i = 0;
+		for (CompetitivePlayer player : terrorists.getPlayers()) {
+			if (player.getLoadout().hasBomb()) {
+				player.getLoadout().setHasBomb(false);
+			}
+			if (i == randomIndex) {
+				player.getLoadout().setHasBomb(true);
+			}
+			i++;
 		}
 	}
 
+	public void plantBomb(CompetitivePlayer player) {
+		this.bombBlock = player.getPlayer().getLocation().getBlock();
+		player.getPlayer().getLocation().getBlock().setType(Material.DAYLIGHT_DETECTOR);
+		player.getPlayer().getInventory().setItem(8, null);
+		player.getLoadout().setHasBomb(false);
+		timer.plantBomb();
+	}
+
+	public void defuseBomb(CompetitivePlayer player) {
+		winRound(TeamEnum.COUNTER_TERRORISTS);
+	}
+
+	public void explodeBomb() {
+		bombBlock.getWorld().createExplosion(bombBlock.getX(), bombBlock.getY(), bombBlock.getZ(), 10, false, false);
+	}
+
+	public Block getBombBlock() {
+		return bombBlock;
+	}
+
+	public int getTotalAmountOfPlayers() {
+		return counter_terrorists.getPlayers().size() + terrorists.getPlayers().size();
+	}
+
+	public int getInRound() {
+		return inRound;
+	}
+
+	public void addDroppedItem(Item item) {
+		droppedItems.add(item);
+	}
+
+	public void removeDroppedItem(Item item) {
+		droppedItems.remove(item);
+	}
+
+	private void destroyItems() {
+		for (Item item : droppedItems) {
+			item.remove();
+		}
+		droppedItems.clear();
+	}
+
+	public CompetitiveTimer getTimer() {
+		return timer;
+	}
+
+	public CompetitiveTeam getCompetitiveTeam(TeamEnum team) {
+		return team != null ? (team == TeamEnum.TERRORISTS ? terrorists : counter_terrorists) : null;
+	}
 }

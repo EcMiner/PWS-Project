@@ -6,7 +6,7 @@ public class MainBuyGUI extends BuyGUI {
 
 	public MainBuyGUI(final CompetitivePlayer player) {
 		super("buy menu", player, null, "SELECT");
-		addButton("rifles", false, new Runnable() {
+		addButton("Rifles", new Runnable() {
 
 			@Override
 			public void run() {
@@ -14,11 +14,45 @@ public class MainBuyGUI extends BuyGUI {
 			}
 
 		});
-		addButton("pistols");
-		addButton("smg");
-		addButton("heavy");
-		addButton("grenades");
-		addButton("equipment");
-	}
+		addButton("Pistols", new Runnable() {
 
+			@Override
+			public void run() {
+				BuyGUI.openPage(player, PistolsGUI.class);
+			}
+
+		});
+		addButton("SMGs", new Runnable() {
+
+			@Override
+			public void run() {
+				BuyGUI.openPage(player, SMGGui.class);
+			}
+
+		});
+		addButton("Heavy Rifles", new Runnable() {
+
+			@Override
+			public void run() {
+				BuyGUI.openPage(player, HeavyGUI.class);
+			}
+
+		});
+		addButton("Grenades", new Runnable() {
+
+			@Override
+			public void run() {
+				BuyGUI.openPage(player, GrenadesGUI.class);
+			}
+
+		});
+		addButton("Equipment", new Runnable() {
+
+			@Override
+			public void run() {
+				BuyGUI.openPage(player, EquipmentGUI.class);
+			}
+
+		});
+	}
 }

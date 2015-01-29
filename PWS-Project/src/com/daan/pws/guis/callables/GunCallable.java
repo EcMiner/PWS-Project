@@ -4,11 +4,16 @@ import java.util.concurrent.Callable;
 
 import com.daan.pws.match.CompetitivePlayer;
 import com.daan.pws.weapon.Gun;
+import com.daan.pws.weapon.WeaponManager;
 
 public class GunCallable implements Callable<Boolean> {
 
 	private Gun gun;
 	private CompetitivePlayer player;
+
+	public GunCallable(String gunName, CompetitivePlayer player) {
+		this(WeaponManager.getGun(gunName), player);
+	}
 
 	public GunCallable(Gun gun, CompetitivePlayer player) {
 		this.gun = gun;

@@ -1,7 +1,5 @@
 package com.daan.pws.guis;
 
-import java.util.concurrent.Callable;
-
 import com.daan.pws.match.CompetitivePlayer;
 import com.daan.pws.match.enums.TeamEnum;
 
@@ -17,14 +15,8 @@ public class RiflesGUI extends BuyGUI {
 			addButton("AWP", false);
 			addButton("G3SG1", false);
 		} else {
-			addButton("FAMAS", false, new Callable<Boolean>() {
-
-				@Override
-				public Boolean call() throws Exception {
-					return false;
-				}
-			});
-			addButton("M4A1-S", false);
+			addButton("FAMAS", false);
+			addButton("M4A4", false);
 			addButton("SSG 08", false);
 			addButton("AUG", false);
 			addButton("AWP", false);

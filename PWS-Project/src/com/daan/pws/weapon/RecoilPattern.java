@@ -18,7 +18,6 @@ public abstract class RecoilPattern {
 			Location loc = player.getEyeLocation().clone();
 			loc.setPitch(loc.getPitch() + pitch);
 			loc.setYaw(loc.getYaw() + yaw);
-			System.out.println(bullet + ": " + pitch);
 			return loc.getDirection();
 		}
 		return new Vector(0, 0, 0);

@@ -5,6 +5,7 @@ import com.daan.pws.match.enums.TeamEnum;
 public class CompetitiveLoadout {
 
 	private TeamEnum team;
+	private Competitive match;
 
 	private CompetitiveGun primary = null;
 	private CompetitiveGun secondary = null;
@@ -15,9 +16,10 @@ public class CompetitiveLoadout {
 	private boolean hasBomb = false;
 	private boolean hasDefuseKit = false;
 
-	public CompetitiveLoadout(TeamEnum team) {
+	public CompetitiveLoadout(TeamEnum team, Competitive match) {
 		this.team = team;
-		this.secondary = new CompetitiveGun(team.getDefaultGun());
+		this.match = match;
+		this.secondary = new CompetitiveGun(team.getDefaultGun(), match);
 	}
 
 	public boolean hasBomb() {
@@ -44,6 +46,10 @@ public class CompetitiveLoadout {
 		this.hasKevlar = hasKevlar;
 	}
 
+	public void setHasBomb(boolean hasBomb) {
+		this.hasBomb = hasBomb;
+	}
+
 	public CompetitiveGun getPrimary() {
 		return primary;
 	}
@@ -52,12 +58,24 @@ public class CompetitiveLoadout {
 		return secondary;
 	}
 
+	public boolean hasPrimary() {
+		return this.primary != null;
+	}
+
 	public void setPrimary(CompetitiveGun primary) {
 		this.primary = primary;
 	}
 
+	public boolean hasSecondary() {
+		return this.secondary != null;
+	}
+
 	public void setSecondary(CompetitiveGun secondary) {
 		this.secondary = secondary;
+	}
+
+	public Competitive getMatch() {
+		return match;
 	}
 
 }
