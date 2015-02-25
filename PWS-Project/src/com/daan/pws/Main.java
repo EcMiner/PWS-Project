@@ -1,11 +1,16 @@
 package com.daan.pws;
 
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.daan.pws.commands.LobbyCommand;
 import com.daan.pws.commands.MapCommand;
+import com.daan.pws.guis.BuyGUI;
+import com.daan.pws.guis.MainBuyGUI;
 import com.daan.pws.guis.listeners.BuyGUIListener;
 import com.daan.pws.listeners.BuyButtonListener;
 import com.daan.pws.listeners.LeftClickListener;
@@ -16,6 +21,8 @@ import com.daan.pws.listeners.SelectionListener;
 import com.daan.pws.listeners.UseButtonListener;
 import com.daan.pws.listeners.WeaponDropListener;
 import com.daan.pws.listeners.WorldListener;
+import com.daan.pws.match.Competitive;
+import com.daan.pws.match.CompetitivePlayer;
 import com.daan.pws.match.listeners.BlockListener;
 import com.daan.pws.match.listeners.BombListener;
 import com.daan.pws.match.listeners.DamageListener;
@@ -49,6 +56,7 @@ public class Main extends JavaPlugin {
 	}
 
 	public static void registerCommands(CommandExecutor exec, String... commands) {
+		System.out.println(instance == null);
 		for (String command : commands) {
 			instance.getCommand(command).setExecutor(exec);
 		}
@@ -78,6 +86,19 @@ public class Main extends JavaPlugin {
 		pluginManager.registerEvents(new com.daan.pws.match.listeners.PlayerListener(), this);
 		pluginManager.registerEvents(new DamageListener(), this);
 
+	}
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (command.getName().equalsIgnoreCase("gui")) {
+			SpoutPlayer player = (SpoutPlayer) sender;
+			if (Competitive.isInMatch(player)) {
+				CompetitivePlayer cPlayer = Competitive.getMatch(player).getCompetitivePlayer(player);
+				cPlayer.setMoney(100000);
+				BuyGUI.openPage(cPlayer, MainBuyGUI.class);
+			}
+		}
+		return false;
 	}
 
 }

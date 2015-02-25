@@ -36,22 +36,25 @@ public class LeftClickListener implements InputListener {
 			Gun gun = cGun.getGun();
 			if (gun.isAutomatic()) {
 				if (cGun.getBulletsInMagazine() > 0 && !gun.isReloading(p)) {
+					cGun.startShooting();
 					fireTasks.put(p.getName(), new AutoGunTimer(p, gun) {
 
 						@Override
 						public void run() {
 							if (Competitive.isInMatch(player) && CompetitiveGun.isCompetitiveGun(player.getItemInHand()) && CompetitiveGun.getCompetitiveGun(player.getItemInHand()) == cGun) {
 								if (cGun.getBulletsInMagazine() > 0 && !gun.isReloading(player)) {
-									this.gun.shootBulllet(player);
+									this.gun.shootBulllet(player, cGun.getBullet());
 								} else {
 									if (!this.gun.isReloading(player))
 										this.gun.reload(player);
 									this.cancel();
 									fireTasks.remove(player.getName());
+									cGun.stopShooting();
 								}
 							} else {
 								this.cancel();
 								fireTasks.remove(player.getName());
+								cGun.stopShooting();
 							}
 						}
 
@@ -64,7 +67,7 @@ public class LeftClickListener implements InputListener {
 			} else {
 				if (!cooldown.containsKey(p.getName()) || System.currentTimeMillis() > cooldown.get(p.getName())) {
 					if (cGun.getBulletsInMagazine() > 0 && !gun.isReloading(p)) {
-						gun.shootBulllet(p);
+						gun.shootBulllet(p, cGun.getBullet());
 						cooldown.put(p.getName(), (long) (System.currentTimeMillis() + (1000 / ((double) (Double.valueOf(gun.getRoundsPerMinute() + "") / Double.valueOf(60d))))));
 					} else {
 						if (gun.canReload(p)) {
@@ -90,6 +93,9 @@ public class LeftClickListener implements InputListener {
 		if (fireTasks.containsKey(p.getName())) {
 			fireTasks.get(p.getName()).cancel();
 			fireTasks.remove(p.getName());
+			if (CompetitiveGun.isCompetitiveGun(p.getItemInHand())) {
+				CompetitiveGun.getCompetitiveGun(p.getItemInHand()).stopShooting();
+			}
 		}
 		if (p.getItemInHand() != null && Bomb.isBomb(p.getItemInHand())) {
 			if (Competitive.isInMatch(p)) {

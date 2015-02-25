@@ -28,6 +28,7 @@ import com.daan.pws.events.PlayerShotEvent;
 import com.daan.pws.match.Competitive;
 import com.daan.pws.match.CompetitiveGun;
 import com.daan.pws.match.hud.GunHud;
+import com.daan.pws.particle.ParticleEffects;
 import com.daan.pws.scheduler.ERunnable;
 import com.daan.pws.utilities.PlayerUtil;
 import com.daan.pws.weapon.DamagePattern.PlayerHeight;
@@ -183,10 +184,8 @@ public class Gun extends Weapon {
 			SpoutManager.getSoundManager().playGlobalCustomMusic(Main.getInstance(), shootUrl, false, player.getEyeLocation(), 50);
 	}
 
-	int x = 0;
-
 	@SuppressWarnings("deprecation")
-	public final void shootBulllet(final SpoutPlayer player) {
+	public final void shootBulllet(final SpoutPlayer player, int bullet) {
 		if (Competitive.isInMatch(player) && CompetitiveGun.isCompetitiveGun(player.getItemInHand())) {
 			CompetitiveGun.getCompetitiveGun(player.getItemInHand()).shoot();
 			com.daan.pws.match.hud.GunHud.updateGunHud(player, CompetitiveGun.getCompetitiveGun(player.getItemInHand()));
@@ -195,6 +194,13 @@ public class Gun extends Weapon {
 
 		// Een aantal berekeningen voor de terugslag van een geweer, de kogels worden minder accuraat als je aan het lopen bent
 		final Location loc = player.getEyeLocation();
+
+		if (recoilPattern != null) {
+			float[] floatArray = recoilPattern.onGunShoot(bullet);
+			loc.setYaw(loc.getYaw() + floatArray[0]);
+			loc.setPitch(loc.getPitch() - floatArray[1]);
+		}
+
 		Vector toAdd = loc.getDirection();
 
 		double multiplyX = ((Math.random() * 20) / 26) * (26 - (!PlayerUtil.isZoomedIn(player) ? recoilControl : 20));
@@ -221,6 +227,13 @@ public class Gun extends Weapon {
 		// Een for loop die 300 blokjes ver kijkt of de kogel iets raakt.
 		for (int i = 0; i < 300; i++) {
 			loc.add(toAdd);
+			if (i % 3 == 0) {
+				try {
+					ParticleEffects.CRIT.sendToPlayer(player, loc, 0, 0, 0, 0.0f, 1);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			// Hier kijken ik of de kogel niet tegen een vast blokje aankomt
 			if (!loc.getBlock().getType().isSolid() || canGoThrough(loc)) {
 				// Een for loop die door alle entities die in dezelfde Chunk (een stuk van 16x16x256 van de wereld) gaat.

@@ -9,14 +9,19 @@ import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.inventory.SpoutItemStack;
 import org.getspout.spoutapi.material.item.GenericCustomTool;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
+import com.daan.pws.Main;
 import com.daan.pws.entities.EntityCustomItem;
 import com.daan.pws.utilities.ItemUtil;
 import com.daan.pws.utilities.NumberUtil;
+import com.daan.pws.utilities.PlayerUtil;
 import com.daan.pws.weapon.Gun;
+import com.daan.pws.weapon.WeaponManager;
 
 public class CompetitiveGun {
 
@@ -65,6 +70,9 @@ public class CompetitiveGun {
 
 	private final int id;
 
+	private BukkitRunnable run;
+	private int bullet = 1;
+
 	public CompetitiveGun(Gun gun, Competitive match) {
 		this.gun = gun;
 		this.gunItem = ItemUtil.setItemMeta(new SpoutItemStack(gun.getGunItem()), gun.getName(), generateId() + "");
@@ -100,6 +108,7 @@ public class CompetitiveGun {
 	public void shoot() {
 		if (bulletsInMagazine > 0) {
 			--bulletsInMagazine;
+			++bullet;
 		}
 	}
 
@@ -139,6 +148,11 @@ public class CompetitiveGun {
 		p.getInventory().setItem(slot, null);
 		if (p.getInventory().getHeldItemSlot() == slot) {
 			com.daan.pws.match.hud.GunHud.removeGunHud(p);
+			PlayerUtil.removePotionEffectSafe(p, 3, PotionEffectType.FAST_DIGGING);
+			player.getPlayer().setWalkSpeed(0.3F);
+			if (PlayerUtil.isZoomedIn(player.getPlayer())) {
+				PlayerUtil.zoomOut(player.getPlayer());
+			}
 		}
 		if (player.getLoadout().getPrimary() == this) {
 			player.getLoadout().setPrimary(null);
@@ -154,6 +168,8 @@ public class CompetitiveGun {
 
 		if (slot == player.getPlayer().getInventory().getHeldItemSlot()) {
 			com.daan.pws.match.hud.GunHud.updateGunHud(player.getPlayer(), this);
+			PlayerUtil.addPotionEffectNoParticles(player.getPlayer(), 3, 1029389, 100);
+			player.getPlayer().setWalkSpeed((gun.getMovementSpeed() * 0.3F) / 250);
 		}
 
 		if (gun.getWeaponType().isPrimary()) {
@@ -170,6 +186,36 @@ public class CompetitiveGun {
 	public void reset() {
 		this.bulletsInMagazine = gun.getBulletsInRound();
 		this.bulletsReserve = gun.getTotalAmmo() - gun.getBulletsInRound();
+	}
+
+	public int getBullet() {
+		return bullet;
+	}
+
+	public void startShooting() {
+		if (run != null) {
+			run.cancel();
+		}
+	}
+
+	public void stopShooting() {
+		if (run != null) {
+			run.cancel();
+		}
+		run = new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				System.out.println(bullet);
+				if (bullet > 1) {
+					--bullet;
+				} else {
+					cancel();
+					run = null;
+				}
+			}
+		};
+		run.runTaskTimer(Main.getInstance(), 1, 1);
 	}
 
 }

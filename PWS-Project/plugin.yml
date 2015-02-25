@@ -5,3 +5,5 @@ softdepend: [ProtocolLib]
 commands:
   lobby:
   comp:
+  map:
+  gui:

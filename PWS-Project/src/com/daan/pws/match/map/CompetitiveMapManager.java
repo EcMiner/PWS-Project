@@ -158,6 +158,8 @@ public class CompetitiveMapManager {
 						}
 					}
 					maps.get(mapName.toLowerCase()).add(map);
+					System.out.println("Loaded map: " + map.getName() + ":" + map.getId());
+					System.out.println("Map valid?: " + map.isValid());
 				}
 			}
 		}

@@ -4,27 +4,25 @@ import com.daan.pws.weapon.DamagePattern;
 import com.daan.pws.weapon.Gun;
 import com.daan.pws.weapon.WeaponType;
 
-public class P2000 extends Gun {
+public class DesertEagle extends Gun {
 
-	public P2000() {
-		super("P2000", "http://panisme.nl/csgo/textures/p2000.png", 65, 13, 352, false, 200, WeaponType.PISTOLS, 2.2, "", "http://panisme.nl/csgo/icons/p2000_icon.png", 240, 50.5, 19);
+	public DesertEagle() {
+		super("Desert Eagle", "http://panisme.nl/csgo/textures/deserteagle.png", 42, 7, 267, false, 700, WeaponType.PISTOLS, 2.2, "", "http://panisme.nl/csgo/icons/deserteagle_icon.png", 230, 93.2, 3);
 		setDamagePattern(new DamagePattern() {
 
 			@Override
 			public int onBulletHit(PlayerHeight height) {
 				switch (height) {
 				case HEAD:
-					return 140;
+					return 249;
 				case CHEST:
-					return 34;
+					return 62;
 				case STOMACH:
-					return 43;
+					return 77;
 				default:
-					return 26;
+					return 46;
 				}
 			}
-
 		});
 	}
-
 }

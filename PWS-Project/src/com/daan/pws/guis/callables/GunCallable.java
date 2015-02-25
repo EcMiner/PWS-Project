@@ -23,9 +23,9 @@ public class GunCallable implements Callable<Boolean> {
 	@Override
 	public Boolean call() throws Exception {
 		if (gun != null && player != null) {
-			if (player.getLoadout().getPrimary() != null && !player.getLoadout().getPrimary().getGunName().equalsIgnoreCase(gun.getName()))
+			if (player.getLoadout().getPrimary() != null && player.getLoadout().getPrimary().getGun().equals(gun))
 				return false;
-			if (player.getLoadout().getSecondary() != null && !player.getLoadout().getSecondary().getGunName().equalsIgnoreCase(gun.getName()))
+			if (player.getLoadout().getSecondary() != null && player.getLoadout().getSecondary().getGun().equals(gun))
 				return false;
 			return player.getMoney() >= gun.getPrice();
 		}

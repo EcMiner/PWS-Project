@@ -10,9 +10,16 @@ import org.bukkit.inventory.ItemStack;
 import com.daan.pws.guns.AK47;
 import com.daan.pws.guns.AUG;
 import com.daan.pws.guns.AWP;
+import com.daan.pws.guns.CZ75;
+import com.daan.pws.guns.DesertEagle;
+import com.daan.pws.guns.Famas;
+import com.daan.pws.guns.GalilAR;
 import com.daan.pws.guns.Glock18;
+import com.daan.pws.guns.M4A4;
 import com.daan.pws.guns.P2000;
+import com.daan.pws.guns.P250;
 import com.daan.pws.guns.P90;
+import com.daan.pws.guns.PPBizon;
 import com.daan.pws.guns.SSG08;
 
 public class WeaponManager {
@@ -31,6 +38,13 @@ public class WeaponManager {
 		_(new AWP());
 		_(new AUG());
 		_(new SSG08());
+		_(new M4A4());
+		_(new GalilAR());
+		_(new Famas());
+		_(new DesertEagle());
+		_(new P250());
+		_(new CZ75());
+		_(new PPBizon());
 	}
 
 	private void _(Gun gun) {
